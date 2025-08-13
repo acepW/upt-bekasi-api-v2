@@ -113,16 +113,46 @@ const MtuController = {
         headerMappingDS // mapping header
       );
 
+      const resultLAFilter = filterData(jsonResultLA.data);
+      const resultCTFilter = filterData(jsonResultCT.data);
+      const resultKabelPowerFilter = filterData(jsonResultKabelPower.data);
+      const resultTRAFOFilter = filterData(jsonResultTRAFO.data);
+      const resultCVTFilter = filterData(jsonResultCVT.data);
+      const resultCBFilter = filterData(jsonResultCB.data);
+      const resultDSFilter = filterData(jsonResultDS.data);
+
       res.status(200).json({
         status: "success",
         message: "get data successfully",
-        la: jsonResultLA,
-        ct: jsonResultCT,
-        kabel_power: jsonResultKabelPower,
-        trafo: jsonResultTRAFO,
-        cvt: jsonResultCVT,
-        cb: jsonResultCB,
-        ds: jsonResultDS,
+
+        la: {
+          status_usia: resultLAFilter.usia,
+          prioritas: resultLAFilter.prioritas,
+        },
+        ct: {
+          status_usia: resultCTFilter.usia,
+          prioritas: resultCTFilter.prioritas,
+        },
+        kabel_power: {
+          status_usia: resultKabelPowerFilter.usia,
+          prioritas: resultKabelPowerFilter.prioritas,
+        },
+        trafo: {
+          status_usia: resultTRAFOFilter.usia,
+          prioritas: resultTRAFOFilter.prioritas,
+        },
+        cvt: {
+          status_usia: resultCVTFilter.usia,
+          prioritas: resultCVTFilter.prioritas,
+        },
+        cb: {
+          status_usia: resultCBFilter.usia,
+          prioritas: resultCBFilter.prioritas,
+        },
+        ds: {
+          status_usia: resultDSFilter.usia,
+          prioritas: resultDSFilter.prioritas,
+        },
       });
     } catch (error) {
       res.status(500).json({
@@ -260,6 +290,36 @@ const MtuController = {
     }
   },
 };
+
+function filterData(data) {
+  // Grup berdasarkan status_usia
+  const byStatusUsia = Object.values(
+    data.reduce((acc, item) => {
+      acc[item.status_usia] = acc[item.status_usia] || {
+        status_usia: item.status_usia,
+        jumlah: 0,
+      };
+      acc[item.status_usia].jumlah += 1;
+      return acc;
+    }, {})
+  );
+
+  // Grup berdasarkan prioritas
+  const byPrioritas = Object.values(
+    data.reduce((acc, item) => {
+      acc[item.prioritas] = acc[item.prioritas] || {
+        prioritas: item.prioritas,
+        jumlah: 0,
+      };
+      acc[item.prioritas].jumlah += 1;
+      return acc;
+    }, {})
+  );
+  return {
+    usia: byStatusUsia,
+    prioritas: byPrioritas,
+  };
+}
 
 function validateMapping(data, indexStartData, mapping) {
   const maxColumn = Math.max(...(data[indexStartData]?.map((_, i) => i) || []));
