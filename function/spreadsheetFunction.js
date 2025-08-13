@@ -940,7 +940,7 @@ const SCOPES = [
   "https://www.googleapis.com/auth/spreadsheets.readonly",
   "https://www.googleapis.com/auth/drive.readonly",
 ];
-const CREDENTIALS_PATH = path.join(__dirname, "../config/credentials.json");
+const CREDENTIALS_PATH = path.join(__dirname, "../credentials.json");
 
 module.exports = SpreadsheetsFunction;
 
