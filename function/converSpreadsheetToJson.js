@@ -1,14 +1,16 @@
 const convertSpreadsheetToJson = {
   convertSpreadsheetToJSON(data, indexStartData, mapping, mergedFields = []) {
     // Ambil data mulai dari baris yang ditentukan
-    const dataRows = data
-      .slice(indexStartData)
-      .filter(
-        (row) =>
-          row &&
-          row.length > 0 &&
-          row.some((cell) => cell !== null && cell !== undefined && cell !== "")
-      );
+    const dataRows = data.slice(indexStartData).filter(
+      (row) =>
+        row &&
+        row.length > 0 &&
+        row.some((cell) => cell !== null && cell !== undefined && cell !== "")
+      // row.filter(
+      //   (cell) =>
+      //     cell !== null && cell !== undefined && String(cell).trim() !== ""
+      // ).length >= 2
+    );
 
     // Object untuk menyimpan nilai terakhir dari field yang di-merge
     const lastMergedValues = {};

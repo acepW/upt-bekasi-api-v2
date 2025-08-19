@@ -15,6 +15,14 @@ const dataConfig = {
       spreadsheetId: "1vrerW8XgBRWCowRvIVzSh-NOZQPvFuY5",
     },
   },
+  monitoring: {
+    konstruksi: {
+      adkonDalkon: {
+        folderId: "10kkR2AY-V_tSaCotIn5-DoUNJI-dmCNi",
+        spreadsheetId: "1icYMhv-SEm-AUYPd7alyY7tenGHYaiUx",
+      },
+    },
+  },
 };
 
 module.exports = dataConfig;
