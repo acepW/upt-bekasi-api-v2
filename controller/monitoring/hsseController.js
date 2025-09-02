@@ -39,7 +39,58 @@ const HsseController = {
       });
     }
   },
+
+  getHsseJadwalPekerjaanK3: async (req, res) => {
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.hsse.jadwalPekerjaanK3.folderId, //folder Id
+        dataConfig.hsse.jadwalPekerjaanK3.spreadsheetId, //spreadsheet Id
+        "667158117" // sheet id
+      );
+
+      // Konversi data
+      const jsonResult = convertSpreadsheetToJSON(
+        data.data, //data spreadsheet
+        9, //index awal data
+        headerMappingJadwalPekerjaanK3 //custom header
+      );
+
+      const filterJsonResult = filterOutSingleValueData(jsonResult.data);
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+        data: filterJsonResult,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
 };
+
+function filterOutSingleValueData(data) {
+  const emptyValues = new Set(["-", "", null, undefined]);
+
+  return data.filter((item) => {
+    let validCount = 0;
+
+    // Early exit jika sudah menemukan 2 field valid
+    for (const value of Object.values(item)) {
+      if (!emptyValues.has(value)) {
+        validCount++;
+        if (validCount > 1) {
+          return true; // Keep this item
+        }
+      }
+    }
+
+    return false; // Remove items with 0 or 1 valid values
+  });
+}
 
 const headerMapping = [
   { field: "item", column: 0 },
@@ -286,6 +337,23 @@ const headerMapping = [
     },
   },
   { field: "presentase_terpenuhi", column: 81 },
+];
+
+const headerMappingJadwalPekerjaanK3 = [
+  { field: "no", column: 0 },
+  { field: "ultg", column: 1 },
+  { field: "gardu_induk", column: 2 },
+  { field: "bay_lokasi_kerja", column: 3 },
+  { field: "tegangan", column: 4 },
+  { field: "rencana_mulai_tgl", column: 5 },
+  { field: "rencana_mulai_jam", column: 6 },
+  { field: "rencana_selesai_tgl", column: 7 },
+  { field: "rencana_selesai_jam", column: 8 },
+  { field: "uraian_pekerjaan", column: 9 },
+  { field: "pelaksana", column: 10 },
+  { field: "penanggung_jawab", column: 11 },
+  { field: "tim_safety_advisor", column: 12 },
+  { field: "keterangan", column: 13 },
 ];
 
 module.exports = HsseController;

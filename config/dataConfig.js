@@ -1,25 +1,35 @@
 const dataConfig = {
   dataAsset: {
     mtuPergantian: {
-      folderId: "1mKt5ziOPlDz0RkXHBtOCyy8nbJELHF6u",
-      spreadsheetId: "1IpeQdcJ4nkPVOWX8iu9ff7t4SlVHp-Ub",
+      folderId: "1fMd2AyJyYokFrVWIYPQgAux-Bsr1N2tF",
+      spreadsheetId: "191yepVNw3As7Ze3yZRsv0SoWF-MbKGRZ",
     },
     mtuKondisi: {
-      folderId: "1LM-RaIip4Gkz6WAN3ngGz5S9L7rcc7R_",
-      spreadsheetId: "1xJFVeUNizMj385_xm6sgEwAHdcEq4jmQ",
+      folderId: "1quhUF7HLTeQrLg-3aKIbFMzvAqjrlJqk",
+      spreadsheetId: "1EkMyFgGRRq2Fjl_E0934_fnsPRr-5ijn",
     },
   },
   hsse: {
     peralatan: {
-      folderId: "1FjxocPcbmLoG-VpkMnjtLQHYIzfyI0AH",
-      spreadsheetId: "1vrerW8XgBRWCowRvIVzSh-NOZQPvFuY5",
+      folderId: "1N13Czh5tHe9_c7wqvLaUQj8UAWCk4gjC",
+      spreadsheetId: "1aMAA415kNVnSspWx1aV51BQ0kE-NmzXF",
+    },
+    jadwalPekerjaanK3: {
+      folderId: "1DPdsiLsyfso4RGw3tWAD4tdz51JSepwy",
+      spreadsheetId: "1MZ-Ooz8E2n2cAGqt1Jgzx-jxWRLeb8ij",
     },
   },
   monitoring: {
     konstruksi: {
       adkonDalkon: {
-        folderId: "10kkR2AY-V_tSaCotIn5-DoUNJI-dmCNi",
-        spreadsheetId: "1icYMhv-SEm-AUYPd7alyY7tenGHYaiUx",
+        folderId: "1_H6HA-B2cWoyzbsY1TUHpM6jXYmaiscH",
+        spreadsheetId: "1RK7RrtPJHWr_JTVM42E_PkRJHJP_2y0b",
+      },
+      logistik: {
+        monitoringGudang: {
+          folderId: "1kz9fNqVBb67EcYesJOkQeqjWWkQGY0mb",
+          spreadsheetId: "19Ru7k44XgD0gQsWmVZXoiNzenMrYbsab",
+        },
       },
     },
   },

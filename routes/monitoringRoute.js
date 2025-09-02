@@ -5,8 +5,16 @@ const datakonstruksiController = require("../controller/monitoring/konstruksiCon
 
 router.get("/monitoring/hsse/peralatan", dataHsseController.getHssePeralatan);
 router.get(
+  "/monitoring/hsse/pekerjaanK3",
+  dataHsseController.getHsseJadwalPekerjaanK3
+);
+router.get(
   "/monitoring/konstruksi/adkonDalkon",
   datakonstruksiController.getAdkonDalkon
+);
+router.get(
+  "/monitoring/konstruksi/logistik/gudang",
+  datakonstruksiController.getMonitoringGudang
 );
 
 module.exports = router;
