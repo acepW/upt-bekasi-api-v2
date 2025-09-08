@@ -8,6 +8,10 @@ const dataConfig = {
       folderId: "1quhUF7HLTeQrLg-3aKIbFMzvAqjrlJqk",
       spreadsheetId: "1EkMyFgGRRq2Fjl_E0934_fnsPRr-5ijn",
     },
+    karyawan: {
+      folderId: "11AkF-dMSOR89jKGwX_hrqxj5feNdKKEz",
+      spreadsheetId: "1FloVgW2VjpSITMDWZKWwLy1GVW11VJaB",
+    },
   },
   hsse: {
     peralatan: {
