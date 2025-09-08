@@ -78,7 +78,6 @@ const KaryawanController = {
         status: "success",
         message: "get data successfully",
 
-        //data_karyawan: jsonResult.data,
         unit: unit,
         jenis_kelamin: jenis_kelamin,
         grade: grade,
@@ -89,7 +88,7 @@ const KaryawanController = {
           tad: totalTad,
         },
         ftk: filterFtk,
-        tad: filterTad,
+        data_karyawan: jsonResult.data,
       });
     } catch (error) {
       res.status(500).json({
