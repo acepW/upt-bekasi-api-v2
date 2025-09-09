@@ -64,11 +64,57 @@ const KaryawanController = {
         (item) => item.uraian !== "TOTAL"
       );
 
+      const dataKaryawanUpt = jsonResult.data.filter(
+        (d) => d.unit && d.unit.trim().toLowerCase().includes("upt bekasi")
+      );
+
+      const dataKaryawanUltgBekasi = jsonResult.data.filter(
+        (d) => d.unit && d.unit.trim().toLowerCase().includes("ultg bekasi")
+      );
+      const dataKaryawanUltgCikarang = jsonResult.data.filter(
+        (d) => d.unit && d.unit.trim().toLowerCase().includes("ultg cikarang")
+      );
+
       const unit = groupCount(jsonResult.data, "unit");
       const jenis_kelamin = groupCount(jsonResult.data, "jenis_kelamin");
       const grade = groupCount(jsonResult.data, "grade");
       const pegawaiPensiun = groupCount(jsonResult.data, "tahun_pensiun");
       const masaKerjaGrouped = groupByMasaKerja(jsonResult.data);
+
+      const unitUpt = groupCount(dataKaryawanUpt, "unit");
+      const jenis_kelaminUpt = groupCount(dataKaryawanUpt, "jenis_kelamin");
+      const gradeUpt = groupCount(dataKaryawanUpt, "grade");
+      const pegawaiPensiunUpt = groupCount(dataKaryawanUpt, "tahun_pensiun");
+      const masaKerjaGroupedUpt = groupByMasaKerja(dataKaryawanUpt);
+
+      const unitUltgBekasi = groupCount(dataKaryawanUltgBekasi, "unit");
+      const jenis_kelaminUltgBekasi = groupCount(
+        dataKaryawanUltgBekasi,
+        "jenis_kelamin"
+      );
+      const gradeUltgBekasi = groupCount(dataKaryawanUltgBekasi, "grade");
+      const pegawaiPensiunUltgBekasi = groupCount(
+        dataKaryawanUltgBekasi,
+        "tahun_pensiun"
+      );
+      const masaKerjaGroupedUltgBekasi = groupByMasaKerja(
+        dataKaryawanUltgBekasi
+      );
+
+      const unitUltgCikarang = groupCount(dataKaryawanUltgCikarang, "unit");
+      const jenis_kelaminUltgCikarang = groupCount(
+        dataKaryawanUltgCikarang,
+        "jenis_kelamin"
+      );
+      const gradeUltgCikarang = groupCount(dataKaryawanUltgCikarang, "grade");
+      const pegawaiPensiunUltgCikarang = groupCount(
+        dataKaryawanUltgCikarang,
+        "tahun_pensiun"
+      );
+      const masaKerjaGroupedUltgCikarang = groupByMasaKerja(
+        dataKaryawanUltgCikarang
+      );
+
       const totalTad = filterTad.reduce(
         (sum, item) => sum + Number(item.jumlah),
         0
@@ -83,10 +129,26 @@ const KaryawanController = {
         grade: grade,
         masa_kerja: masaKerjaGrouped,
         pegawai_pensiun: pegawaiPensiun,
-        personil: {
-          pegawai: jsonResult.data.length,
-          tad: totalTad,
-        },
+        unit_upt: unitUpt,
+        jenis_kelamin_upt: jenis_kelaminUpt,
+        grade_upt: gradeUpt,
+        masa_kerja_upt: masaKerjaGroupedUpt,
+        pegawai_pensiun_upt: pegawaiPensiunUpt,
+        unit_ultg_bekasi: unitUltgBekasi,
+        jenis_kelamin_ultg_bekasi: jenis_kelaminUltgBekasi,
+        grade_ultg_bekasi: gradeUltgBekasi,
+        masa_kerja_ultg_bekasi: masaKerjaGroupedUltgBekasi,
+        pegawai_pensiun_ultg_bekasi: pegawaiPensiunUltgBekasi,
+        unit_ultg_cikarang: unitUltgCikarang,
+        jenis_kelamin_ultg_cikarang: jenis_kelaminUltgCikarang,
+        grade_ultg_cikarang: gradeUltgCikarang,
+        masa_kerja_ultg_cikarang: masaKerjaGroupedUltgCikarang,
+        pegawai_pensiun_ultg_cikarang: pegawaiPensiunUltgCikarang,
+        pegawai: jsonResult.data.length,
+        pegawai_upt: dataKaryawanUpt.length,
+        pegawai_ultg_bekasi: dataKaryawanUltgBekasi.length,
+        pegawai_ultg_cikarang: dataKaryawanUltgCikarang.length,
+        tad: totalTad,
         ftk: filterFtk,
         data_karyawan: jsonResult.data,
       });
