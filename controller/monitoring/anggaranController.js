@@ -1,0 +1,83 @@
+const express = require("express");
+const { google } = require("googleapis");
+const fs = require("fs");
+const path = require("path");
+const XLSX = require("xlsx"); // Untuk membaca file Excel
+const SpreadsheetsFunction = require("../../function/spreadsheetFunction");
+const dataConfig = require("../../config/dataConfig");
+const {
+  convertSpreadsheetToJSON,
+} = require("../../function/converSpreadsheetToJson");
+
+const AnggaranController = {
+  getAnggaran: async (req, res) => {
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.monitoring.anggaran.folderId, //folder Id
+        dataConfig.monitoring.anggaran.spreadsheetId, //spreadsheet Id
+        [277215817] // sheet id
+      );
+
+      const headerPosKepegawaian = [
+        { field: "bulan", column: 1 },
+        { field: "sko_1_tahun", column: 2 },
+        { field: "realisasi_akumulasi", column: 3 },
+        { field: "presentase", column: 4 },
+      ];
+
+      const headerPosPemeliharaan = [
+        { field: "bulan", column: 1 },
+        { field: "sko_1_tahun", column: 5 },
+        { field: "realisasi_akumulasi", column: 6 },
+        { field: "presentase", column: 7 },
+      ];
+
+      const headerPosAdministrasiUmum = [
+        { field: "bulan", column: 1 },
+        { field: "sko_1_tahun", column: 8 },
+        { field: "realisasi_akumulasi", column: 9 },
+        { field: "presentase", column: 10 },
+      ];
+
+      // Konversi data
+      const jsonResultKepegawaian = convertSpreadsheetToJSON(
+        data.data, // data spreadsheet
+        2, //index mulai data
+        headerPosKepegawaian,
+        ["sko_1_tahun"] // mapping header //merge data
+      );
+
+      // Konversi data
+      const jsonResultPemeliharaan = convertSpreadsheetToJSON(
+        data.data, // data spreadsheet
+        2, //index mulai data
+        headerPosPemeliharaan,
+        ["sko_1_tahun"] // mapping header //merge data
+      );
+
+      // Konversi data
+      const jsonResultAdministrasiUmum = convertSpreadsheetToJSON(
+        data.data, // data spreadsheet
+        2, //index mulai data
+        headerPosAdministrasiUmum,
+        ["sko_1_tahun"] // mapping header //merge data
+      );
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+        pos_kepegawaian: jsonResultKepegawaian.data,
+        pos_pemeliharaan: jsonResultPemeliharaan.data,
+        pos_administrasi_umum: jsonResultAdministrasiUmum.data,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
+};
+
+module.exports = AnggaranController;

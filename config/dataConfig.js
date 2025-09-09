@@ -12,6 +12,10 @@ const dataConfig = {
       folderId: "11AkF-dMSOR89jKGwX_hrqxj5feNdKKEz",
       spreadsheetId: "1FloVgW2VjpSITMDWZKWwLy1GVW11VJaB",
     },
+    sld: {
+      folderId: "14o5cvlBnobWNnpMYbkeZJ4bD-loYfGa2",
+      spreadsheetId: "1K-6vRb3y7TznCQ9cM_uJRHZshXlbyq1m",
+    },
   },
   hsse: {
     peralatan: {
@@ -21,6 +25,10 @@ const dataConfig = {
     jadwalPekerjaanK3: {
       folderId: "1DPdsiLsyfso4RGw3tWAD4tdz51JSepwy",
       spreadsheetId: "1MZ-Ooz8E2n2cAGqt1Jgzx-jxWRLeb8ij",
+    },
+    katalogPeralatan: {
+      folderId: "1N13Czh5tHe9_c7wqvLaUQj8UAWCk4gjC",
+      spreadsheetId: "1QKFtFtX9juBFWaQJDkAzJMl2hMI6vQYB",
     },
   },
   monitoring: {
@@ -34,7 +42,15 @@ const dataConfig = {
           folderId: "1kz9fNqVBb67EcYesJOkQeqjWWkQGY0mb",
           spreadsheetId: "19Ru7k44XgD0gQsWmVZXoiNzenMrYbsab",
         },
+        monitoringGudangSaldoAkhir: {
+          folderId: "1kz9fNqVBb67EcYesJOkQeqjWWkQGY0mb",
+          spreadsheetId: "1kJHHOhfXMCsGHgQr7CIATN98zLonnlN-",
+        },
       },
+    },
+    anggaran: {
+      folderId: "1pzyXm2nPnSd_tt7igKevZ3fKbXULkW-7",
+      spreadsheetId: "18X30NFqIC5ARw1bf7buOXV7DUs6vZyRW",
     },
   },
 };

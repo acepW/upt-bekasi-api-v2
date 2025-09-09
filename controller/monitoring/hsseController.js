@@ -70,6 +70,37 @@ const HsseController = {
       });
     }
   },
+
+  getHsseKatalogPeralatan: async (req, res) => {
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.hsse.katalogPeralatan.folderId, //folder Id
+        dataConfig.hsse.katalogPeralatan.spreadsheetId, //spreadsheet Id
+        "426001325" // sheet id
+      );
+
+      // Konversi data
+      const jsonResult = convertSpreadsheetToJSON(
+        data.data, //data spreadsheet
+        4, //index awal data
+        headerMappingKatalogPeralatan //custom header
+      );
+
+      const filterJsonResult = filterOutSingleValueData(jsonResult.data);
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+        data: filterJsonResult,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
 };
 
 function filterOutSingleValueData(data) {
@@ -354,6 +385,17 @@ const headerMappingJadwalPekerjaanK3 = [
   { field: "penanggung_jawab", column: 11 },
   { field: "tim_safety_advisor", column: 12 },
   { field: "keterangan", column: 13 },
+];
+
+const headerMappingKatalogPeralatan = [
+  { field: "nama_peralatan", column: 1 },
+  { field: "standar", column: 2 },
+  { field: "model_1_gambar", column: 3 },
+  { field: "model_1_spesifikasi", column: 4 },
+  { field: "model_1_brand_relevan", column: 5 },
+  { field: "model_2_gambar", column: 6 },
+  { field: "model_2_spesifikasi", column: 7 },
+  { field: "model_2_brand_relevan", column: 8 },
 ];
 
 module.exports = HsseController;

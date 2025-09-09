@@ -934,6 +934,7 @@ async function getGoogleSheetDataBySheetId(
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId: spreadsheetId,
         range: dataRange,
+        // includeGridData: true,
       });
 
       const rows = response.data.values || [];
