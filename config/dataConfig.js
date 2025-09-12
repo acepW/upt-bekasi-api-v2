@@ -16,6 +16,10 @@ const dataConfig = {
       folderId: "14o5cvlBnobWNnpMYbkeZJ4bD-loYfGa2",
       spreadsheetId: "1K-6vRb3y7TznCQ9cM_uJRHZshXlbyq1m",
     },
+    slo: {
+      folderId: "1YIJ10ANLHggZ3kQR9EYeACsnISNOtnj1",
+      spreadsheetId: "1ezC6Clsctz0wCoT-LlRzyfGtTYqZDyc0",
+    },
   },
   hsse: {
     peralatan: {

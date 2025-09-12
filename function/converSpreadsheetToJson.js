@@ -91,6 +91,97 @@ const convertSpreadsheetToJson = {
       data: result,
     };
   },
+
+  convertSpreadsheetToJSONWithRange(
+    data,
+    indexStartData,
+    indexEndData, // tambahan parameter
+    mapping,
+    mergedFields = []
+  ) {
+    // Tentukan slice sesuai start & end
+    const dataRows = data
+      .slice(
+        indexStartData,
+        indexEndData !== undefined ? indexEndData + 1 : undefined
+      ) // +1 biar end inclusive
+      .filter(
+        (row) =>
+          row &&
+          row.length > 0 &&
+          row.some((cell) => cell !== null && cell !== undefined && cell !== "")
+      );
+
+    // Object untuk menyimpan nilai terakhir dari field yang di-merge
+    const lastMergedValues = {};
+    mergedFields.forEach((field) => {
+      lastMergedValues[field] = null;
+    });
+
+    const result = dataRows.map((row) => {
+      const obj = {};
+
+      mapping.forEach((map) => {
+        if (map.type === "group") {
+          // Field grup
+          const groupObj = {};
+          for (const [subField, columnIndex] of Object.entries(map.fields)) {
+            if (columnIndex >= 0 && columnIndex < row.length) {
+              const cellValue = row[columnIndex];
+              groupObj[subField] =
+                cellValue !== null &&
+                cellValue !== undefined &&
+                cellValue !== ""
+                  ? cellValue
+                  : "-";
+            } else {
+              groupObj[subField] = "-";
+            }
+          }
+          obj[map.field] = groupObj;
+        } else {
+          // Field tunggal
+          if (map.column >= 0 && map.column < row.length) {
+            const cellValue = row[map.column];
+            if (mergedFields.includes(map.field)) {
+              if (
+                cellValue !== null &&
+                cellValue !== undefined &&
+                cellValue !== ""
+              ) {
+                lastMergedValues[map.field] = cellValue;
+                obj[map.field] = cellValue;
+              } else {
+                obj[map.field] = lastMergedValues[map.field] || "-";
+              }
+            } else {
+              obj[map.field] =
+                cellValue !== null &&
+                cellValue !== undefined &&
+                cellValue !== ""
+                  ? cellValue
+                  : "-";
+            }
+          } else {
+            obj[map.field] = "-";
+          }
+        }
+      });
+
+      return obj;
+    });
+
+    return {
+      metadata: {
+        title: data[0]?.[0] || "",
+        instruction: data[1]?.[0] || "",
+        totalRecords: result.length,
+        totalFields: mapping.length,
+        generatedAt: new Date().toISOString(),
+      },
+      data: result,
+    };
+  },
 };
 
 module.exports = convertSpreadsheetToJson;
