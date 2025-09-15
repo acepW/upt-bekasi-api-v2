@@ -4,6 +4,7 @@ const dataMtuController = require("../controller/dataAsset/mtuController");
 const dataKaryawan = require("../controller/dataAsset/dataKaryawanController");
 const dataSldController = require("../controller/dataAsset/sldController");
 const dataSloController = require("../controller/dataAsset/sloController");
+const dataTowerController = require("../controller/dataAsset/towerController");
 
 router.get("/data-asset/mtu/penggantian", dataMtuController.getPenggantianMtu);
 router.get(
@@ -13,5 +14,6 @@ router.get(
 router.get("/data-asset/karyawan", dataKaryawan.getKaryawan);
 router.get("/data-asset/sld", dataSldController.getSld);
 router.get("/data-asset/slo", dataSloController.getSlo);
+router.get("/data-asset/tower-kritis", dataTowerController.getTowerKritis);
 
 module.exports = router;

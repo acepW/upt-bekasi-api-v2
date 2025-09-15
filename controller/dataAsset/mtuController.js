@@ -164,23 +164,25 @@ const MtuController = {
   },
   getPenggantianMtu: async (req, res) => {
     try {
-      const data = await SpreadsheetsFunction.getSpecificSheetData(
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
         dataConfig.dataAsset.mtuPergantian.folderId, //folder Id
         dataConfig.dataAsset.mtuPergantian.spreadsheetId, //spreadsheet Id
-        ["Daftar MTU", "Dashboard"] // sheet name
+        [226407544, 1116888089] // sheet name
       );
 
       //untuk 99 belum ada datanya
       const headerMapping = [
         { field: "no", column: 0 },
-        { field: "ultg", column: 3 },
-        { field: "bay", column: 5 },
-        { field: "mtu", column: 11 },
-        { field: "fase", column: 16 },
-        { field: "onsite_mtu", column: 99 },
-        { field: "rencana_pasang", column: 36 },
-        { field: "realisasi_pasang", column: 37 },
-        { field: "usulan_relokasi", column: 99 },
+        { field: "ultg", column: 1 },
+        { field: "gi", column: 2 },
+        { field: "bay", column: 3 },
+        { field: "mtu", column: 4 },
+        { field: "fase", column: 6 },
+        { field: "onsite_mtu", column: 7 },
+        { field: "rencana_pasang", column: 8 },
+        { field: "realisasi_pasang", column: 9 },
+        { field: "usulan_relokasi_gi", column: 10 },
+        { field: "usulan_relokasi_bay", column: 11 },
       ];
 
       const headerMappingDashboard = [
@@ -221,55 +223,17 @@ const MtuController = {
       //data.data = data spreadsheet
       // 7 =  index mulai data
       // headerMapping = mapping header
-      const validation = validateMapping(
-        data.sheetsData["Daftar MTU"].data,
-        7,
-        headerMapping
-      );
-
-      //header untuk Dashboard
-      const validationDashboard = validateMapping(
-        data.sheetsData["Dashboard"].data,
-        14,
-        headerMappingDashboard
-      );
-
-      if (validation.errors.length > 0) {
-        console.log("\n❌ Mapping Errors (akan menyebabkan error):");
-        validation.errors.forEach((error) => console.log(`  - ${error}`));
-        return; // Stop execution jika ada error
-      }
-
-      if (validation.warnings.length > 0) {
-        console.log("\n⚠️  Mapping Warnings (akan menggunakan '-'):");
-        validation.warnings.forEach((warning) => console.log(`  - ${warning}`));
-      }
-
-      if (validationDashboard.errors.length > 0) {
-        console.log("\n❌ Mapping Errors (akan menyebabkan error):");
-        validationDashboard.errors.forEach((error) =>
-          console.log(`  - ${error}`)
-        );
-        return; // Stop execution jika ada error
-      }
-
-      if (validationDashboard.warnings.length > 0) {
-        console.log("\n⚠️  Mapping Warnings (akan menggunakan '-'):");
-        validationDashboard.warnings.forEach((warning) =>
-          console.log(`  - ${warning}`)
-        );
-      }
 
       // Konversi data
       const jsonResult = convertSpreadsheetToJSON(
-        data.sheetsData["Daftar MTU"].data,
-        7,
+        data.sheetsData[226407544].data,
+        5,
         headerMapping
       );
 
       // Konversi data
       const jsonResultDashboard = convertSpreadsheetToJSON(
-        data.sheetsData["Dashboard"].data,
+        data.sheetsData[1116888089].data,
         14,
         headerMappingDashboard
       );

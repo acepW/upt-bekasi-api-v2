@@ -20,6 +20,10 @@ const dataConfig = {
       folderId: "1YIJ10ANLHggZ3kQR9EYeACsnISNOtnj1",
       spreadsheetId: "1ezC6Clsctz0wCoT-LlRzyfGtTYqZDyc0",
     },
+    towerKritis: {
+      folderId: "1Y9fm-SicbpELIuPHmwT5Xu8wE8oP6oBN",
+      spreadsheetId: "1nxUUTEbPobBVzSxecwR6Gv5-avHk3KKK",
+    },
   },
   hsse: {
     peralatan: {
