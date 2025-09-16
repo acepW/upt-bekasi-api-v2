@@ -21,8 +21,11 @@ const KonstruksiController = {
       const headerMapping = [
         { field: "no_kontrak", column: 1 },
         { field: "nama_kontrak", column: 3 },
-        { field: "tgl_kontrak", column: 10 },
-        { field: "akhir_kontrak", column: 99 }, // 99 untuk kolom yang tidak ada di spreadsheet
+        { field: "nilai_terkontrak", column: 4 },
+        { field: "sudah_bayar", column: 6 },
+        { field: "tgl_kontrak", column: 9 },
+        { field: "tgl_efektif_kontrak", column: 10 },
+        { field: "akhir_kontrak", column: 12 },
         { field: "fisik", column: 17 },
         { field: "bayar", column: 18 },
         { field: "status", column: 99 }, // 99 untuk kolom yang tidak ada di spreadsheet
@@ -31,14 +34,74 @@ const KonstruksiController = {
       // Konversi data
       const jsonResult = convertSpreadsheetToJSON(
         data.data, //data spreadsheet
-        9, //index awal data
+        6, //index awal data
         headerMapping //custom header
+      );
+
+      // filter data, hilangkan yang no_kontrak atau nama_kontrak bernilai "-"
+      const filteredData = jsonResult.data.filter(
+        (item) => item.no_kontrak !== "-" && item.nama_kontrak !== "-"
+      );
+
+      const convertedData = filteredData.map((item) => ({
+        ...item,
+        nilai_terkontrak: parseCurrency(item.nilai_terkontrak),
+        sudah_bayar: parseCurrency(item.sudah_bayar),
+      }));
+      const grouped = Object.values(
+        convertedData.reduce((acc, item) => {
+          const year = new Date(item.tgl_efektif_kontrak).getFullYear();
+
+          if (!acc[year]) {
+            acc[year] = {
+              tahun: year,
+              total_kontrak: 0,
+              progress_fisik: 0,
+              progress_bayar: 0,
+              data: [],
+            };
+          }
+
+          //acc[year].data.push(item);
+          acc[year].total_kontrak += 1;
+
+          if (
+            item.fisik === "100%" ||
+            item.fisik === "100.00%" ||
+            item.fisik === "100"
+          ) {
+            acc[year].progress_fisik += 1;
+          }
+          if (
+            item.bayar === "100%" ||
+            item.bayar === "100.00%" ||
+            item.bayar === "100"
+          ) {
+            acc[year].progress_bayar += 1;
+          }
+
+          return acc;
+        }, {})
+      );
+
+      const pratinjauKontrak = groupCount(convertedData, "status");
+
+      const anggaranInvestasi = convertedData.reduce(
+        (acc, item) => {
+          acc.skki_terbit += item.nilai_terkontrak;
+          acc.aki_terbayar += item.sudah_bayar;
+          return acc;
+        },
+        { skki_terbit: 0, aki_terbayar: 0 }
       );
 
       res.status(200).json({
         status: "success",
         message: "get data successfully",
-        data: jsonResult,
+        data_kontrak: convertedData,
+        grafik_progres_fisik: grouped,
+        pratinjau_kontrak: pratinjauKontrak,
+        anggaran_investasi: anggaranInvestasi,
       });
     } catch (error) {
       res.status(500).json({
@@ -55,8 +118,8 @@ const KonstruksiController = {
         dataConfig.monitoring.konstruksi.logistik.monitoringGudang.folderId, //folder Id
         dataConfig.monitoring.konstruksi.logistik.monitoringGudang
           .spreadsheetId, //spreadsheet Id
-        [0, 671767085, 1446476439, 1125139855, 535284859] // sheet id
-        //non sap , sisa pekerjaan, material bongkaran, non b3, alat berat
+        [0, 671767085, 1446476439, 1125139855, 535284859, 1618970871] // sheet id
+        //non sap , sisa pekerjaan, material bongkaran, non b3, alat berat, kapasitas gudang
       );
 
       const dataSaldoAkhirUITJBT =
@@ -124,8 +187,8 @@ const KonstruksiController = {
       const jsonResultSaldoAkhirUPT = convertSpreadsheetToJSON(
         dataSaldoAkhirUPT.data, //data spreadsheet
         1, //index awal data
-        headerMappingSaldoAkhitUPT,
-        ["bulan", "tahun"] //custom header //merge field
+        headerMappingSaldoAkhitUPT, //custom header
+        ["bulan", "tahun", "pragnosa_akhir_bulan", "progress_realisasi"] //merge field
       );
 
       const grupSaldoAkhirUPT = groupBulanSaldoAkhirUPT(
@@ -142,12 +205,12 @@ const KonstruksiController = {
 
       const grupAlatBerat = groupAlatKerja(jsonResultAlatBerat.data);
 
-      // // Konversi data
-      // const jsonResultGudang = convertSpreadsheetToJSON(
-      //   dataGudang.sheetsData[1618970871].data, //data spreadsheet
-      //   9, //index awal data
-      //   headerMappingGudang //custom header
-      // );
+      // Konversi data
+      const jsonResultGudang = convertSpreadsheetToJSON(
+        dataGudang.sheetsData[1618970871].data, //data spreadsheet
+        9, //index awal data
+        headerMappingGudang //custom header
+      );
 
       res.status(200).json({
         status: "success",
@@ -161,7 +224,8 @@ const KonstruksiController = {
           material_bongkaran: jsonResultMaterialBongkaran.data.length,
           non_b3: filterNonB3.length,
         },
-        grafik_matlev: grupSaldoAkhirUPT,
+        grafik_saldo: grupSaldoAkhirUPT,
+        data_gudang: jsonResultGudang.data,
         alat_berat: grupAlatBerat,
       });
     } catch (error) {
@@ -210,6 +274,8 @@ const headerMappingSaldoAkhitUPT = [
   { field: "nilai", column: 12 },
   { field: "penerimaan", column: 13 },
   { field: "pengeluaran", column: 15 },
+  { field: "pragnosa_akhir_bulan", column: 19 },
+  { field: "progres_realisasi", column: 99 },
 ];
 const headerMappingAlatBerat = [
   { field: "nama", column: 0 },
@@ -292,6 +358,18 @@ function groupBulanSaldoAkhirUPT(items) {
     oktober: [],
     november: [],
     desember: [],
+    saldo_januari: { rencana: 0, realisasi: 0 },
+    saldo_februari: { rencana: 0, realisasi: 0 },
+    saldo_maret: { rencana: 0, realisasi: 0 },
+    saldo_april: { rencana: 0, realisasi: 0 },
+    saldo_mei: { rencana: 0, realisasi: 0 },
+    saldo_juni: { rencana: 0, realisasi: 0 },
+    saldo_juli: { rencana: 0, realisasi: 0 },
+    saldo_agustus: { rencana: 0, realisasi: 0 },
+    saldo_september: { rencana: 0, realisasi: 0 },
+    saldo_oktober: { rencana: 0, realisasi: 0 },
+    saldo_november: { rencana: 0, realisasi: 0 },
+    saldo_desember: { rencana: 0, realisasi: 0 },
   };
 
   items.forEach((item) => {
@@ -299,32 +377,209 @@ function groupBulanSaldoAkhirUPT(items) {
 
     if (type.includes("JANUARI")) {
       result.januari.push(item);
+
+      if (result.saldo_januari.rencana == 0) {
+        result.saldo_januari.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_januari.realisasi == 0) {
+        result.saldo_januari.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("FEBRUARI")) {
       result.februari.push(item);
+
+      if (result.saldo_februari.rencana == 0) {
+        result.saldo_februari.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_februari.realisasi == 0) {
+        result.saldo_februari.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("MARET")) {
       result.maret.push(item);
+
+      if (result.saldo_maret.rencana == 0) {
+        result.saldo_maret.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_maret.realisasi == 0) {
+        result.saldo_maret.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("APRIL")) {
       result.april.push(item);
+
+      if (result.saldo_april.rencana == 0) {
+        result.saldo_april.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_april.realisasi == 0) {
+        result.saldo_april.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("MEI")) {
       result.mei.push(item);
+
+      if (result.saldo_mei.rencana == 0) {
+        result.saldo_mei.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_mei.realisasi == 0) {
+        result.saldo_mei.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("JUNI")) {
       result.juni.push(item);
+
+      if (result.saldo_juni.rencana == 0) {
+        result.saldo_juni.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_juni.realisasi == 0) {
+        result.saldo_juni.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("JULI")) {
       result.juli.push(item);
+
+      if (result.saldo_juli.rencana == 0) {
+        result.saldo_juli.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_juli.realisasi == 0) {
+        result.saldo_juli.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("AGUSTUS")) {
       result.agustus.push(item);
+
+      if (result.saldo_agustus.rencana == 0) {
+        result.saldo_agustus.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_agustus.realisasi == 0) {
+        result.saldo_agustus.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("SEPTEMBER")) {
       result.september.push(item);
+
+      if (result.saldo_september.rencana == 0) {
+        result.saldo_september.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_september.realisasi == 0) {
+        result.saldo_september.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("OKTOBER")) {
       result.oktober.push(item);
+
+      if (result.saldo_oktober.rencana == 0) {
+        result.saldo_oktober.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_oktober.realisasi == 0) {
+        result.saldo_oktober.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("NOVEMBER")) {
       result.november.push(item);
+
+      if (result.saldo_november.rencana == 0) {
+        result.saldo_november.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_november.realisasi == 0) {
+        result.saldo_november.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     } else if (type.includes("DESEMBER")) {
       result.desember.push(item);
+
+      if (result.saldo_desember.rencana == 0) {
+        result.saldo_desember.rencana = convertToNumber(
+          item.pragnosa_akhir_bulan == "-" ? "0" : item.pragnosa_akhir_bulan
+        );
+      }
+
+      if (result.saldo_desember.realisasi == 0) {
+        result.saldo_desember.realisasi = convertToNumber(
+          item.progres_realisasi == "-" ? "0" : item.progres_realisasi
+        );
+      }
     }
   });
 
   return result;
 }
+
+function convertToNumber(value) {
+  return parseInt(
+    value.replace(/[^0-9]/g, ""), // hapus semua karakter selain angka
+    10
+  );
+}
+
+// ambil tahun dari tgl_efektif_kontrak
+function getYear(dateStr) {
+  if (!dateStr || dateStr === "-") return null;
+  return new Date(dateStr).getFullYear();
+}
+
+function groupCount(arr, field) {
+  const result = {};
+  arr.forEach((item) => {
+    const key = item[field];
+    if (!result[key]) result[key] = 0;
+    result[key] += 1;
+  });
+
+  return Object.entries(result).map(([key, total]) => ({
+    [field]: key,
+    total,
+  }));
+}
+
+// fungsi helper untuk ubah string jadi number
+const parseCurrency = (value) => {
+  if (!value || value === "-") return 0;
+  return Number(value.replace(/,/g, ""));
+};
 
 module.exports = KonstruksiController;
