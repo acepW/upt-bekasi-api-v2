@@ -55,9 +55,29 @@ const KonstruksiController = {
         dataConfig.monitoring.konstruksi.logistik.monitoringGudang.folderId, //folder Id
         dataConfig.monitoring.konstruksi.logistik.monitoringGudang
           .spreadsheetId, //spreadsheet Id
-        [0, 671767085, 1446476439, 1125139855] // sheet id
-        //kapasitas gudang , limbah non b3
+        [0, 671767085, 1446476439, 1125139855, 1620736452] // sheet id
+        //non sap , sisa pekerjaan, material bongkaran, non b3, alat kerja gudang
       );
+
+      const dataSaldoAkhirUITJBT =
+        await SpreadsheetsFunction.getSpecificSheetDataById(
+          dataConfig.monitoring.konstruksi.logistik.monitoringGudangSaldoUITJBT
+            .folderId, //folder Id
+          dataConfig.monitoring.konstruksi.logistik.monitoringGudangSaldoUITJBT
+            .spreadsheetId, //spreadsheet Id
+          [936401927] // sheet id
+          //data untuk material normal,bursa,cadang
+        );
+
+      const dataSaldoAkhirUPT =
+        await SpreadsheetsFunction.getSpecificSheetDataById(
+          dataConfig.monitoring.konstruksi.logistik.monitoringGudangSaldoAkhir
+            .folderId, //folder Id
+          dataConfig.monitoring.konstruksi.logistik.monitoringGudangSaldoAkhir
+            .spreadsheetId, //spreadsheet Id
+          [1795387809] // sheet id
+          //data untuk saldo
+        );
 
       // Konversi data
       const jsonResultNonSap = convertSpreadsheetToJSON(
@@ -91,6 +111,37 @@ const KonstruksiController = {
         (item) => item.nama_material !== "-"
       );
 
+      // Konversi data saldo akhir UIT
+      const jsonResultSaldoAkhirUIT = convertSpreadsheetToJSON(
+        dataSaldoAkhirUITJBT.data, //data spreadsheet
+        11, //index awal data
+        headerMappingSaldoAkhitUIT //custom header
+      );
+
+      const grupSaldoAkhitUIT = groupTypeSaldoUIT(jsonResultSaldoAkhirUIT.data);
+
+      // Konversi data saldo akhir UPT
+      const jsonResultSaldoAkhirUPT = convertSpreadsheetToJSON(
+        dataSaldoAkhirUPT.data, //data spreadsheet
+        1, //index awal data
+        headerMappingSaldoAkhitUPT,
+        ["bulan", "tahun"] //custom header //merge field
+      );
+
+      const grupSaldoAkhirUPT = groupBulanSaldoAkhirUPT(
+        jsonResultSaldoAkhirUPT.data
+      );
+
+      //alat berat
+      // Konversi data
+      const jsonResultAlatBerat = convertSpreadsheetToJSON(
+        dataGudang.sheetsData[1620736452].data, //data spreadsheet
+        10, //index awal data
+        headerMappingAlatBerat //custom header
+      );
+
+      const grupAlatBerat = groupAlatKerja(jsonResultAlatBerat.data);
+
       // // Konversi data
       // const jsonResultGudang = convertSpreadsheetToJSON(
       //   dataGudang.sheetsData[1618970871].data, //data spreadsheet
@@ -102,11 +153,16 @@ const KonstruksiController = {
         status: "success",
         message: "get data successfully",
         persediaan: {
+          normal: grupSaldoAkhitUIT.normal.length,
+          cadang: grupSaldoAkhitUIT.cadang.length,
+          bursa: grupSaldoAkhitUIT.bursa.length,
           non_sap: jsonResultNonSap.data.length,
           sisa_pekerjaan: jsonResultSisaPekerjaan.data.length,
           material_bongkaran: jsonResultMaterialBongkaran.data.length,
           non_b3: filterNonB3.length,
         },
+        grafik_matlev: grupSaldoAkhirUPT,
+        alat_berat: grupAlatBerat,
       });
     } catch (error) {
       res.status(500).json({
@@ -140,10 +196,31 @@ const headerMappingNonB3 = [
   { field: "gudang", column: 4 },
 ];
 
+const headerMappingSaldoAkhitUIT = [
+  { field: "no_material", column: 1 },
+  { field: "type_valuasi", column: 7 },
+];
+
+const headerMappingSaldoAkhitUPT = [
+  { field: "bulan", column: 1 },
+  { field: "tahun", column: 2 },
+  { field: "kontrak", column: 3 },
+  { field: "no_kontrak", column: 4 },
+  { field: "penerimaan_pengeluaran", column: 5 },
+  { field: "nilai", column: 12 },
+  { field: "penerimaan", column: 13 },
+  { field: "pengeluaran", column: 15 },
+];
+const headerMappingAlatBerat = [
+  { field: "alat_kerja", column: 1 },
+  { field: "kondisi", column: 7 },
+];
+
 const headerMappingGudang = [
   { field: "gudang", column: 2 },
   { field: "sub_gudang", column: 3 },
-  { field: "persentase_gudang_terpakai", column: 7 },
+  { field: "luas_gudang", column: 5 },
+  { field: "luas_gudang_terpakai", column: 6 },
   { field: "persediaan", column: 9 },
   { field: "cadang", column: 10 },
   { field: "pre_memory", column: 11 },
@@ -151,5 +228,95 @@ const headerMappingGudang = [
   { field: "lainnya_limbah_non_b3", column: 13 },
   { field: "waktu_update", column: 24 },
 ];
+
+function groupAlatKerja(items) {
+  const result = {
+    forklift: [],
+    crane: [],
+  };
+
+  items.forEach((item) => {
+    const alat = item.alat_kerja.toUpperCase(); // biar tidak case-sensitive
+
+    if (alat.includes("FORKLIFT")) {
+      result.forklift.push(item);
+    } else if (alat.includes("CRANE")) {
+      result.crane.push(item);
+    }
+  });
+
+  return result;
+}
+
+function groupTypeSaldoUIT(items) {
+  const result = {
+    cadang: [],
+    normal: [],
+    bursa: [],
+  };
+
+  items.forEach((item) => {
+    const type = item.type_valuasi.toUpperCase(); // biar tidak case-sensitive
+
+    if (type.includes("MAT CADANG")) {
+      result.cadang.push(item);
+    } else if (type.includes("NORMAL")) {
+      result.normal.push(item);
+    } else if (type.includes("BURSA")) {
+      result.bursa.push(item);
+    }
+  });
+
+  return result;
+}
+
+function groupBulanSaldoAkhirUPT(items) {
+  const result = {
+    januari: [],
+    februari: [],
+    maret: [],
+    april: [],
+    mei: [],
+    juni: [],
+    juli: [],
+    agustus: [],
+    september: [],
+    oktober: [],
+    november: [],
+    desember: [],
+  };
+
+  items.forEach((item) => {
+    const type = item.bulan.toUpperCase(); // biar tidak case-sensitive
+
+    if (type.includes("JANUARI")) {
+      result.januari.push(item);
+    } else if (type.includes("FEBRUARI")) {
+      result.februari.push(item);
+    } else if (type.includes("MARET")) {
+      result.maret.push(item);
+    } else if (type.includes("APRIL")) {
+      result.april.push(item);
+    } else if (type.includes("MEI")) {
+      result.mei.push(item);
+    } else if (type.includes("JUNI")) {
+      result.juni.push(item);
+    } else if (type.includes("JULI")) {
+      result.juli.push(item);
+    } else if (type.includes("AGUSTUS")) {
+      result.agustus.push(item);
+    } else if (type.includes("SEPTEMBER")) {
+      result.september.push(item);
+    } else if (type.includes("OKTOBER")) {
+      result.oktober.push(item);
+    } else if (type.includes("NOVEMBER")) {
+      result.november.push(item);
+    } else if (type.includes("DESEMBER")) {
+      result.desember.push(item);
+    }
+  });
+
+  return result;
+}
 
 module.exports = KonstruksiController;

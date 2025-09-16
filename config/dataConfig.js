@@ -54,6 +54,10 @@ const dataConfig = {
           folderId: "1kz9fNqVBb67EcYesJOkQeqjWWkQGY0mb",
           spreadsheetId: "1kJHHOhfXMCsGHgQr7CIATN98zLonnlN-",
         },
+        monitoringGudangSaldoUITJBT: {
+          folderId: "1kz9fNqVBb67EcYesJOkQeqjWWkQGY0mb",
+          spreadsheetId: "1klfv5zjWtoVJhY12wpwSTnRF0eFQTl91",
+        },
       },
     },
     anggaran: {
