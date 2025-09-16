@@ -55,8 +55,8 @@ const KonstruksiController = {
         dataConfig.monitoring.konstruksi.logistik.monitoringGudang.folderId, //folder Id
         dataConfig.monitoring.konstruksi.logistik.monitoringGudang
           .spreadsheetId, //spreadsheet Id
-        [0, 671767085, 1446476439, 1125139855, 1620736452] // sheet id
-        //non sap , sisa pekerjaan, material bongkaran, non b3, alat kerja gudang
+        [0, 671767085, 1446476439, 1125139855, 535284859] // sheet id
+        //non sap , sisa pekerjaan, material bongkaran, non b3, alat berat
       );
 
       const dataSaldoAkhirUITJBT =
@@ -135,8 +135,8 @@ const KonstruksiController = {
       //alat berat
       // Konversi data
       const jsonResultAlatBerat = convertSpreadsheetToJSON(
-        dataGudang.sheetsData[1620736452].data, //data spreadsheet
-        10, //index awal data
+        dataGudang.sheetsData[535284859].data, //data spreadsheet
+        1, //index awal data
         headerMappingAlatBerat //custom header
       );
 
@@ -212,8 +212,16 @@ const headerMappingSaldoAkhitUPT = [
   { field: "pengeluaran", column: 15 },
 ];
 const headerMappingAlatBerat = [
-  { field: "alat_kerja", column: 1 },
-  { field: "kondisi", column: 7 },
+  { field: "nama", column: 0 },
+  { field: "jenis", column: 1 },
+  { field: "model", column: 2 },
+  { field: "pabrik_pembuat", column: 3 },
+  { field: "negara_pembuat", column: 4 },
+  { field: "tahun_pembuatan", column: 5 },
+  { field: "no_seri", column: 6 },
+  { field: "kapasitas_angkat", column: 7 },
+  { field: "tinggi_angkat", column: 8 },
+  { field: "jenis_penggerak", column: 9 },
 ];
 
 const headerMappingGudang = [
@@ -236,7 +244,7 @@ function groupAlatKerja(items) {
   };
 
   items.forEach((item) => {
-    const alat = item.alat_kerja.toUpperCase(); // biar tidak case-sensitive
+    const alat = item.jenis.toUpperCase(); // biar tidak case-sensitive
 
     if (alat.includes("FORKLIFT")) {
       result.forklift.push(item);

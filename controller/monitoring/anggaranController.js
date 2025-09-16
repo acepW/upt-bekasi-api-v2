@@ -21,22 +21,22 @@ const AnggaranController = {
       const headerPosKepegawaian = [
         { field: "bulan", column: 1 },
         { field: "sko_1_tahun", column: 2 },
-        { field: "realisasi_akumulasi", column: 3 },
-        { field: "presentase", column: 4 },
+        { field: "realisasi_akumulasi", column: 4 },
+        { field: "presentase", column: 5 },
       ];
 
       const headerPosPemeliharaan = [
         { field: "bulan", column: 1 },
-        { field: "sko_1_tahun", column: 5 },
-        { field: "realisasi_akumulasi", column: 6 },
-        { field: "presentase", column: 7 },
+        { field: "sko_1_tahun", column: 6 },
+        { field: "realisasi_akumulasi", column: 8 },
+        { field: "presentase", column: 9 },
       ];
 
       const headerPosAdministrasiUmum = [
         { field: "bulan", column: 1 },
-        { field: "sko_1_tahun", column: 8 },
-        { field: "realisasi_akumulasi", column: 9 },
-        { field: "presentase", column: 10 },
+        { field: "sko_1_tahun", column: 10 },
+        { field: "realisasi_akumulasi", column: 12 },
+        { field: "presentase", column: 13 },
       ];
 
       // Konversi data
