@@ -111,7 +111,7 @@ async function getAnomaliGi(dataAnomaliGi) {
 
   // Konversi data gi KebocoranGasSF6UIT
   const jsonResultGiKebocoranGasSF6UIT = convertSpreadsheetToJSON(
-    dataAnomaliGi.sheetsData[1479867489].data, // data spreadsheet
+    dataAnomaliGi.sheetsData[1303146936].data, // data spreadsheet
     1, //index mulai data
     headerGiKebocoranGasSF6UIT
   );
@@ -207,7 +207,7 @@ async function getAnomaliJaringan(dataAnomaliJaringan) {
   );
 
   const filteredDataJaringanPondasi = jsonResultJaringanPondasi.data.filter(
-    (item) => item.ultg !== "-" || item.lokasi !== "-"
+    (item) => item.ultg !== "-" && item.lokasi !== "-" && item.status !== "-"
   );
 
   // Konversi data jaringan Bracing
