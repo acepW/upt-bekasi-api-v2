@@ -38,6 +38,10 @@ const dataConfig = {
       folderId: "1N13Czh5tHe9_c7wqvLaUQj8UAWCk4gjC",
       spreadsheetId: "1QKFtFtX9juBFWaQJDkAzJMl2hMI6vQYB",
     },
+    maturingLevelSustainability: {
+      folderId: "1EJUSC5ZgEVKuQVCWX4RP4_lyvqUNSsxA",
+      spreadsheetId: "1x_-dFio9Mmad0wdMc1VukJbOZcL1ls5y",
+    },
   },
   monitoring: {
     konstruksi: {
@@ -63,6 +67,21 @@ const dataConfig = {
     anggaran: {
       folderId: "1pzyXm2nPnSd_tt7igKevZ3fKbXULkW-7",
       spreadsheetId: "18X30NFqIC5ARw1bf7buOXV7DUs6vZyRW",
+    },
+  },
+
+  performance: {
+    anomaliGi: {
+      folderId: "1TQA7A8h8kcl1kiOQRTyYMxxwAAA_jP7-",
+      spreadsheetId: "1eGVxkbcmE-ZEfkQO0nFtw3apQy0AU4ro",
+    },
+    anomaliJaringan: {
+      folderId: "1TQA7A8h8kcl1kiOQRTyYMxxwAAA_jP7-",
+      spreadsheetId: "1bpX0H8cijIKwblsb7_gpUC2tDfv3TjfO",
+    },
+    anomaliProteksi: {
+      folderId: "1TQA7A8h8kcl1kiOQRTyYMxxwAAA_jP7-",
+      spreadsheetId: "1NYSRGnOtSDZ4DagKfzYRuBn1dn0Qvc2C",
     },
   },
 };

@@ -101,6 +101,60 @@ const HsseController = {
       });
     }
   },
+
+  getHsseMaturingLevelSustain: async (req, res) => {
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.hsse.maturingLevelSustainability.folderId, //folder Id
+        dataConfig.hsse.maturingLevelSustainability.spreadsheetId, //spreadsheet Id
+        [625966397] // sheet id
+      );
+
+      // Konversi data
+      const jsonResult = convertSpreadsheetToJSON(
+        data.data, //data spreadsheet
+        12, //index awal data
+        headerMappingMaturingLevelSustain //custom header
+      );
+
+      const filterJsonResult = filterOutSingleValueData(jsonResult.data);
+
+      const map = {};
+      const roots = [];
+
+      filterJsonResult.forEach((item) => {
+        item.children = [];
+        map[item.no] = item;
+      });
+
+      // Assign ke parent masing-masing
+      filterJsonResult.forEach((item) => {
+        const parts = item.no.split(".");
+        if (parts.length === 1) {
+          // root (misalnya "1", "2", "3")
+          roots.push(item);
+        } else {
+          // cari parent dengan menghapus bagian terakhir
+          const parentNo = parts.slice(0, -1).join(".");
+          if (map[parentNo]) {
+            map[parentNo].children.push(item);
+          }
+        }
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+        data: roots,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
 };
 
 function filterOutSingleValueData(data) {
@@ -396,6 +450,14 @@ const headerMappingKatalogPeralatan = [
   { field: "model_2_gambar", column: 6 },
   { field: "model_2_spesifikasi", column: 7 },
   { field: "model_2_brand_relevan", column: 8 },
+];
+
+const headerMappingMaturingLevelSustain = [
+  { field: "no", column: 2 },
+  { field: "kriterian", column: 3 },
+  { field: "bobot", column: 4 },
+  { field: "nilai_self", column: 5 },
+  { field: "nilai_akhir", column: 6 },
 ];
 
 module.exports = HsseController;

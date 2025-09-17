@@ -13,6 +13,11 @@ router.get(
   "/monitoring/hsse/katalog",
   dataHsseController.getHsseKatalogPeralatan
 );
+
+router.get(
+  "/monitoring/hsse/maturing-level-sustainability",
+  dataHsseController.getHsseMaturingLevelSustain
+);
 router.get(
   "/monitoring/konstruksi/adkonDalkon",
   datakonstruksiController.getAdkonDalkon

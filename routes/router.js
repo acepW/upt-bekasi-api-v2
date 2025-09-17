@@ -8,4 +8,7 @@ router.use("/", require("./dataAssetRoute"));
 //monitoring
 router.use("/", require("./monitoringRoute"));
 
+//performance
+router.use("/", require("./performanceRoute"));
+
 module.exports = router;
