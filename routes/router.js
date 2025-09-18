@@ -23,4 +23,7 @@ router.use("/", require("./articleRoute"));
 //video
 router.use("/", require("./videoRoute"));
 
+//
+router.use("/", require("./uploadRoute"));
+
 module.exports = router;

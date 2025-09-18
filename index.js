@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", require("./routes/router"));
-app.use("/images", express.static(path.join(__dirname, "./file")));
+app.use("/api/images", express.static(path.join(__dirname, "./file")));
 
 app.listen(process.env.APP_PORT, () => {
   console.log(`Example app listening on port ${process.env.APP_PORT}`);
