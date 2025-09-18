@@ -11,4 +11,16 @@ router.use("/", require("./monitoringRoute"));
 //performance
 router.use("/", require("./performanceRoute"));
 
+//user
+router.use("/", require("./userRoute"));
+
+//auth
+router.use("/", require("./authRoute"));
+
+//article
+router.use("/", require("./articleRoute"));
+
+//video
+router.use("/", require("./videoRoute"));
+
 module.exports = router;
