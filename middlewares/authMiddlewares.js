@@ -25,7 +25,7 @@ const authMiddlewares = {
       res.status(500).json({
         success: false,
         status_code: 500,
-        message: err.message,
+        message: error.message,
       });
     }
   },

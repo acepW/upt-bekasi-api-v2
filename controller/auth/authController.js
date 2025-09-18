@@ -39,7 +39,13 @@ const authController = {
         path: "/",
       });
 
-      res.status(200).json({ uuid, name, email, role, no, bagian });
+      res.status(200).json({
+        status: "success",
+        message: "login successfully",
+        name,
+        email,
+        role,
+      });
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }

@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const db = require("./config/databaseConfig");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const Users = require("./model/userModel");
 const Article = require("./model/articleModel");
 const Video = require("./model/videoModel");
@@ -21,6 +22,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
