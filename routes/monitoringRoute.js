@@ -3,6 +3,7 @@ const router = require("express").Router();
 const dataHsseController = require("../controller/monitoring/hsseController");
 const datakonstruksiController = require("../controller/monitoring/konstruksiController");
 const dataAnggaranController = require("../controller/monitoring/anggaranController");
+const dataLmAboController = require("../controller/monitoring/lmAboController");
 
 router.get("/monitoring/hsse/peralatan", dataHsseController.getHssePeralatan);
 router.get(
@@ -28,5 +29,7 @@ router.get(
 );
 
 router.get("/monitoring/anggaran", dataAnggaranController.getAnggaran);
+
+router.get("/monitoring/lm-abo", dataLmAboController.getLmAbo);
 
 module.exports = router;

@@ -114,6 +114,7 @@ const SpreadsheetsFunction = {
       // Cek apakah file adalah spreadsheet yang didukung
       if (mimeType === "application/vnd.google-apps.spreadsheet") {
         // Handle Google Sheets - ambil sheet berdasarkan ID
+        console.log("Processing as spreadsheet file");
         return await getGoogleSheetDataBySheetId(
           resolvedFile.id,
           targetSheetIds,
@@ -126,6 +127,7 @@ const SpreadsheetsFunction = {
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
         mimeType === "application/vnd.ms-excel"
       ) {
+        console.log("Processing as Excel file");
         // Handle Excel files - ambil sheet berdasarkan ID (index)
         return await getExcelDataBySheetId(
           resolvedFile.id,
@@ -146,7 +148,7 @@ const SpreadsheetsFunction = {
         };
       }
     } catch (error) {
-      console.error("Error in getSpecificSheetDataById:", error);
+      //console.error("Error in getSpecificSheetDataById:", error);
       return {
         success: false,
         error: error.message,
@@ -1066,6 +1068,7 @@ async function getGoogleSheetDataBySheetId(
 }
 
 // Helper function untuk mengambil data sheet berdasarkan sheet ID dari Excel
+// Helper function untuk ambil data sheet dari Excel
 async function getExcelDataBySheetId(fileId, sheetIds, drive, fileData) {
   try {
     console.log(
@@ -1087,7 +1090,6 @@ async function getExcelDataBySheetId(fileId, sheetIds, drive, fileData) {
     const workbook = XLSX.read(response.data, { type: "array" });
 
     // Untuk Excel, sheet ID biasanya adalah index (0-based)
-    // Validasi sheet IDs
     const maxSheetIndex = workbook.SheetNames.length - 1;
     const invalidSheetIds = sheetIds.filter((id) => {
       const index = parseInt(id);
@@ -1108,7 +1110,7 @@ async function getExcelDataBySheetId(fileId, sheetIds, drive, fileData) {
         availableSheets: availableSheets,
         fileId: fileId,
         fileName: fileData.name,
-        fileType: getFileType(fileData.mimeType),
+        fileType: "Excel",
         mimeType: fileData.mimeType,
       };
     }
@@ -1116,33 +1118,34 @@ async function getExcelDataBySheetId(fileId, sheetIds, drive, fileData) {
     // Konversi sheet IDs ke sheet names
     const sheetNames = sheetIds.map((id) => workbook.SheetNames[parseInt(id)]);
 
-    // Jika hanya satu sheet, return format single sheet untuk backward compatibility
-    if (sheetIds.length === 1) {
-      const singleSheetId = sheetIds[0];
-      const singleSheetName = sheetNames[0];
-      const worksheet = workbook.Sheets[singleSheetName];
+    // Helper untuk konversi worksheet jadi response standar
+    function parseWorksheet(sheetId, sheetName) {
+      const worksheet = workbook.Sheets[sheetName];
       const rows = XLSX.utils.sheet_to_json(worksheet, {
-        header: 1, // Return array of arrays
-        defval: "", // Default value for empty cells
-        raw: false, // Format all values as strings
+        header: 1, // return array of arrays
+        defval: "", // isi default kosong
+        raw: false, // semua jadi string
       });
 
       const columnCount =
         rows.length > 0 ? Math.max(...rows.map((row) => row.length)) : 0;
 
-      console.log(
-        `Retrieved ${rows.length} rows with ${columnCount} columns from sheet ID ${singleSheetId} (${singleSheetName})`
-      );
-
       return {
-        success: true,
-        fileId: fileId,
-        fileName: fileData.name,
-        fileType: getFileType(fileData.mimeType),
-        mimeType: fileData.mimeType,
-        size: fileData.size,
-        sheetId: parseInt(singleSheetId),
-        sheetName: singleSheetName,
+        sheetId: parseInt(sheetId),
+        sheetName: sheetName,
+        sheetProperties: {
+          title: sheetName,
+          sheetId: parseInt(sheetId),
+          index: parseInt(sheetId),
+        },
+        range:
+          rows.length > 0
+            ? `A1:${XLSX.utils.encode_cell({
+                r: rows.length - 1,
+                c: columnCount - 1,
+              })}`
+            : null,
+        actualRange: null,
         data: rows,
         rowCount: rows.length,
         columnCount: columnCount,
@@ -1151,47 +1154,60 @@ async function getExcelDataBySheetId(fileId, sheetIds, drive, fileData) {
       };
     }
 
-    // Jika multiple sheets, return format multiple sheets
+    // Jika hanya satu sheet → return single sheet
+    if (sheetIds.length === 1) {
+      const singleSheetId = sheetIds[0];
+      const singleSheetName = sheetNames[0];
+      const parsed = parseWorksheet(singleSheetId, singleSheetName);
+
+      console.log(
+        `Retrieved ${parsed.rowCount} rows with ${parsed.columnCount} columns from sheet ID ${parsed.sheetId} (${parsed.sheetName})`
+      );
+
+      return {
+        success: true,
+        fileId: fileId,
+        fileName: fileData.name,
+        fileType: "Excel",
+        mimeType: fileData.mimeType,
+        size: fileData.size,
+        ...parsed,
+      };
+    }
+
+    // Jika multiple sheets → return format multiple sheets
     const sheetsData = {};
     let totalRows = 0;
     let maxColumns = 0;
+    const errors = [];
 
     for (let i = 0; i < sheetIds.length; i++) {
       const sheetId = sheetIds[i];
       const sheetName = sheetNames[i];
 
       try {
-        const worksheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(worksheet, {
-          header: 1, // Return array of arrays
-          defval: "", // Default value for empty cells
-          raw: false, // Format all values as strings
-        });
+        const parsed = parseWorksheet(sheetId, sheetName);
 
-        const columnCount =
-          rows.length > 0 ? Math.max(...rows.map((row) => row.length)) : 0;
+        totalRows += parsed.rowCount;
+        maxColumns = Math.max(maxColumns, parsed.columnCount);
 
-        totalRows += rows.length;
-        maxColumns = Math.max(maxColumns, columnCount);
-
-        sheetsData[sheetId] = {
-          sheetId: parseInt(sheetId),
-          sheetName: sheetName,
-          data: rows,
-          rowCount: rows.length,
-          columnCount: columnCount,
-          headers: rows.length > 0 ? rows[0] : [],
-          isEmpty: rows.length === 0,
-        };
+        sheetsData[sheetId] = parsed;
 
         console.log(
-          `Sheet ID ${sheetId} (${sheetName}): ${rows.length} rows with ${columnCount} columns`
+          `Sheet ID ${parsed.sheetId} (${parsed.sheetName}): ${parsed.rowCount} rows with ${parsed.columnCount} columns`
         );
       } catch (sheetError) {
         console.error(
           `Error getting data from sheet ID ${sheetId} (${sheetName}):`,
           sheetError
         );
+
+        errors.push({
+          sheetId: parseInt(sheetId),
+          sheetName: sheetName,
+          error: sheetError.message,
+        });
+
         sheetsData[sheetId] = {
           sheetId: parseInt(sheetId),
           sheetName: sheetName,
@@ -1209,7 +1225,7 @@ async function getExcelDataBySheetId(fileId, sheetIds, drive, fileData) {
       success: true,
       fileId: fileId,
       fileName: fileData.name,
-      fileType: getFileType(fileData.mimeType),
+      fileType: "Excel",
       mimeType: fileData.mimeType,
       size: fileData.size,
       requestedSheetIds: sheetIds.map((id) => parseInt(id)),
@@ -1217,10 +1233,18 @@ async function getExcelDataBySheetId(fileId, sheetIds, drive, fileData) {
       totalRows: totalRows,
       maxColumns: maxColumns,
       sheetsCount: sheetIds.length,
+      errors: errors.length > 0 ? errors : undefined,
     };
   } catch (error) {
     console.error("Error in getExcelDataBySheetId:", error);
-    throw error;
+    return {
+      success: false,
+      error: error.message,
+      fileId: fileId,
+      fileName: fileData.name,
+      fileType: "Excel",
+      mimeType: fileData.mimeType,
+    };
   }
 }
 

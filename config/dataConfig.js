@@ -24,6 +24,10 @@ const dataConfig = {
       folderId: "1Y9fm-SicbpELIuPHmwT5Xu8wE8oP6oBN",
       spreadsheetId: "1nxUUTEbPobBVzSxecwR6Gv5-avHk3KKK",
     },
+    rowKritis: {
+      folderId: "1mczsHpFyKePuRLUPEZjZn7VBH5d4cFEM",
+      spreadsheetId: "1dfzc1cdgABhaMDUyHb_3MREA0CGt_i2O",
+    },
   },
   hsse: {
     peralatan: {
@@ -67,6 +71,18 @@ const dataConfig = {
     anggaran: {
       folderId: "1pzyXm2nPnSd_tt7igKevZ3fKbXULkW-7",
       spreadsheetId: "18X30NFqIC5ARw1bf7buOXV7DUs6vZyRW",
+    },
+
+    lm_abo: {
+      folderId: "1ruMO_0H9dBY7syU4SiwEuu-s4tiMt-W8",
+      spreadsheetId: "15vTKWbEsJF_UQxcn8N3QnFUqCFFZ6uNX",
+    },
+  },
+
+  kinerja: {
+    upt: {
+      folderId: "1XKB3wuUXuCFCKlpp_YLmlafyRXfGghlc",
+      spreadsheetId: "1NEOwQ2IFSJMeKtGJ8RuJVc_yHCJyV40c",
     },
   },
 

@@ -84,6 +84,88 @@ const TowerController = {
       });
     }
   },
+
+  getRowKritis: async (req, res) => {
+    const { tahun } = req.query;
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.dataAsset.rowKritis.folderId, //folder Id
+        dataConfig.dataAsset.rowKritis.spreadsheetId, //spreadsheet Id
+        [0] // sheet id
+      );
+
+      const headerMapping = [
+        { field: "unit", column: 2 },
+        { field: "ultg", column: 3 },
+        { field: "gi", column: 5 },
+        { field: "penghantar", column: 6 },
+        { field: "tgl_input", column: 7 },
+        { field: "jumlah", column: 17 },
+        { field: "status", column: 21 },
+      ];
+
+      // Konversi data
+      const jsonResult = convertSpreadsheetToJSON(
+        data.data, // data spreadsheet
+        8, //index mulai data
+        headerMapping // mapping header
+      );
+
+      // Tahun sekarang
+      const TahunFilter =
+        tahun == null || tahun == undefined
+          ? new Date().getFullYear()
+          : parseInt(tahun); // misalnya 2025
+
+      // Fungsi parse tgl_input ke tahun penuh (YYYY)
+      function parseYear(tglStr) {
+        // formatnya: DD-MMM-YY → contoh: 18-Sep-25
+        const parts = tglStr.split("-");
+        const day = parseInt(parts[0], 10);
+        const monthStr = parts[1];
+        const year2 = parseInt(parts[2], 10);
+
+        // Mapping bulan
+        const months = {
+          Jan: 0,
+          Feb: 1,
+          Mar: 2,
+          Apr: 3,
+          May: 4,
+          Jun: 5,
+          Jul: 6,
+          Aug: 7,
+          Sep: 8,
+          Oct: 9,
+          Nov: 10,
+          Dec: 11,
+        };
+
+        // Convert ke tahun 4 digit (asumsi semua > 50 berarti 1900, sisanya 2000)
+        const fullYear = year2 < 50 ? 2000 + year2 : 1900 + year2;
+
+        return fullYear;
+      }
+
+      // Filter tahun
+      const filtered = jsonResult.data.filter(
+        (item) => parseYear(item.tgl_input) == TahunFilter
+      );
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+        jumlah_data: filtered.length,
+        data: filtered,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
 };
 
 // fungsi untuk hitung total per field

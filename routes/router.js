@@ -11,6 +11,9 @@ router.use("/", require("./monitoringRoute"));
 //performance
 router.use("/", require("./performanceRoute"));
 
+//kinerja
+router.use("/", require("./kinerjaRoute"));
+
 //user
 router.use("/", require("./userRoute"));
 
