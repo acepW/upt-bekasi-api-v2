@@ -275,7 +275,7 @@ const headerMappingSaldoAkhitUPT = [
   { field: "penerimaan", column: 13 },
   { field: "pengeluaran", column: 15 },
   { field: "pragnosa_akhir_bulan", column: 19 },
-  { field: "progres_realisasi", column: 99 },
+  { field: "progres_realisasi", column: 20 },
 ];
 const headerMappingAlatBerat = [
   { field: "nama", column: 0 },
