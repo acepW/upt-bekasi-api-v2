@@ -15,7 +15,7 @@ const TowerController = {
       const data = await SpreadsheetsFunction.getSpecificSheetDataById(
         dataConfig.dataAsset.towerKritis.folderId, //folder Id
         dataConfig.dataAsset.towerKritis.spreadsheetId, //spreadsheet Id
-        [1245211520, 85722308] // sheet id
+        [1245211520] // sheet id
       );
 
       const headerMapping = [
@@ -31,50 +31,17 @@ const TowerController = {
         { field: "status", column: 17 },
       ];
 
-      const headerMappingTredBebanTrafo = [
-        { field: "gi_gis", column: 0 },
-        { field: "bay", column: 1 },
-        { field: "trafo", column: 2 },
-        { field: "feb", column: 3 },
-        { field: "mar", column: 4 },
-        { field: "apr", column: 5 },
-        { field: "mei", column: 6 },
-      ];
-
       // Konversi data
       const jsonResult = convertSpreadsheetToJSON(
-        data.sheetsData[1245211520].data, // data spreadsheet
+        data.data, // data spreadsheet
         3, //index mulai data
         headerMapping // mapping header
       );
-
-      // Konversi data
-      const jsonResultTrendBebanTrafo = convertSpreadsheetToJSON(
-        data.sheetsData[85722308].data, // data spreadsheet
-        1, //index mulai data
-        headerMappingTredBebanTrafo // mapping header
-      );
-
-      // daftar bulan yg mau diambil
-      const months = ["feb", "mar", "apr", "mei"];
-
-      const groupedByMonth = months.map((month) => {
-        return {
-          bulan: month,
-          data: jsonResultTrendBebanTrafo.data.map((item) => ({
-            gi_gis: item.gi_gis,
-            bay: item.bay,
-            trafo: item.trafo,
-            value: Number(item[month] || 0),
-          })),
-        };
-      });
 
       res.status(200).json({
         status: "success",
         message: "get data successfully",
         data: jsonResult.data,
-        data_trend_beban_trafo: groupedByMonth,
       });
     } catch (error) {
       res.status(500).json({
@@ -157,6 +124,60 @@ const TowerController = {
         message: "get data successfully",
         jumlah_data: filtered.length,
         data: filtered,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
+
+  getHealthIndexTower: async (req, res) => {
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.dataAsset.towerKritis.folderId, //folder Id
+        dataConfig.dataAsset.towerKritis.spreadsheetId, //spreadsheet Id
+        [85722308] // sheet id
+      );
+
+      const headerMappingTredBebanTrafo = [
+        { field: "gi_gis", column: 0 },
+        { field: "bay", column: 1 },
+        { field: "trafo", column: 2 },
+        { field: "feb", column: 3 },
+        { field: "mar", column: 4 },
+        { field: "apr", column: 5 },
+        { field: "mei", column: 6 },
+      ];
+
+      // Konversi data
+      const jsonResultTrendBebanTrafo = convertSpreadsheetToJSON(
+        data.data, // data spreadsheet
+        1, //index mulai data
+        headerMappingTredBebanTrafo // mapping header
+      );
+
+      // daftar bulan yg mau diambil
+      const months = ["feb", "mar", "apr", "mei"];
+
+      const groupedByMonth = months.map((month) => {
+        return {
+          bulan: month,
+          data: jsonResultTrendBebanTrafo.data.map((item) => ({
+            gi_gis: item.gi_gis,
+            bay: item.bay,
+            trafo: item.trafo,
+            value: Number(item[month] || 0),
+          })),
+        };
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+        data_trend_beban_trafo: groupedByMonth,
       });
     } catch (error) {
       res.status(500).json({

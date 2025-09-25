@@ -114,33 +114,46 @@ const KonstruksiController = {
 
   getMonitoringGudang: async (req, res) => {
     try {
-      const dataGudang = await SpreadsheetsFunction.getSpecificSheetDataById(
-        dataConfig.monitoring.konstruksi.logistik.monitoringGudang.folderId, //folder Id
-        dataConfig.monitoring.konstruksi.logistik.monitoringGudang
-          .spreadsheetId, //spreadsheet Id
-        [0, 671767085, 1446476439, 1125139855, 535284859, 1618970871] // sheet id
-        //non sap , sisa pekerjaan, material bongkaran, non b3, alat berat, kapasitas gudang
-      );
-
-      const dataSaldoAkhirUITJBT =
-        await SpreadsheetsFunction.getSpecificSheetDataById(
+      // eksekusi bersamaan
+      const [
+        dataGudang,
+        dataSaldoAkhirUITJBT,
+        dataSaldoAkhirUPT,
+        dataMatlevGudang,
+      ] = await Promise.all([
+        SpreadsheetsFunction.getSpecificSheetDataById(
+          dataConfig.monitoring.konstruksi.logistik.monitoringGudang.folderId, //folder Id
+          dataConfig.monitoring.konstruksi.logistik.monitoringGudang
+            .spreadsheetId, //spreadsheet Id
+          [0, 671767085, 1446476439, 1125139855, 535284859, 1618970871] // sheet id
+          //non sap , sisa pekerjaan, material bongkaran, non b3, alat berat, kapasitas gudang
+        ),
+        SpreadsheetsFunction.getSpecificSheetDataById(
           dataConfig.monitoring.konstruksi.logistik.monitoringGudangSaldoUITJBT
             .folderId, //folder Id
           dataConfig.monitoring.konstruksi.logistik.monitoringGudangSaldoUITJBT
             .spreadsheetId, //spreadsheet Id
           [936401927] // sheet id
           //data untuk material normal,bursa,cadang
-        );
-
-      const dataSaldoAkhirUPT =
-        await SpreadsheetsFunction.getSpecificSheetDataById(
+        ),
+        SpreadsheetsFunction.getSpecificSheetDataById(
           dataConfig.monitoring.konstruksi.logistik.monitoringGudangSaldoAkhir
             .folderId, //folder Id
           dataConfig.monitoring.konstruksi.logistik.monitoringGudangSaldoAkhir
             .spreadsheetId, //spreadsheet Id
           [1795387809] // sheet id
           //data untuk saldo
-        );
+        ),
+
+        SpreadsheetsFunction.getSpecificSheetDataById(
+          dataConfig.monitoring.konstruksi.logistik.monitoringGudangMatlev
+            .folderId, //folder Id
+          dataConfig.monitoring.konstruksi.logistik.monitoringGudangMatlev
+            .spreadsheetId, //spreadsheet Id
+          [980137360] // sheet id
+          //data untuk matlev
+        ),
+      ]);
 
       // Konversi data
       const jsonResultNonSap = convertSpreadsheetToJSON(
@@ -212,9 +225,58 @@ const KonstruksiController = {
         headerMappingGudang //custom header
       );
 
+      // Konversi data
+      const jsonResultMatlev = convertSpreadsheetToJSON(
+        dataMatlevGudang.data, //data spreadsheet
+        2, //index awal data
+        headerMappingMatlev //custom header
+      );
+
+      const bulan = [
+        "januari",
+        "februari",
+        "maret",
+        "april",
+        "mei",
+        "juni",
+        "juli",
+        "agustus",
+        "september",
+        "oktober",
+        "november",
+        "desember",
+      ];
+
+      //filter untuk matlev
+      // hanya ambil data yang `no` isinya angka
+      const filtered = jsonResultMatlev.data.filter((item) =>
+        /^\d+$/.test(item.no)
+      );
+
+      const resultMatlev = {};
+
+      // inisialisasi bulan
+      bulan.forEach((b) => {
+        resultMatlev[b] = [];
+      });
+
+      // isi data kategori + nilai
+      filtered.forEach((item) => {
+        bulan.forEach((b) => {
+          const val = parseFloat(item[b]);
+          if (!isNaN(val)) {
+            resultMatlev[b].push({
+              kategori: item.kategori,
+              nilai: val,
+            });
+          }
+        });
+      });
+
       res.status(200).json({
         status: "success",
         message: "get data successfully",
+        matlev: resultMatlev,
         persediaan: {
           normal: grupSaldoAkhitUIT.normal.length,
           cadang: grupSaldoAkhitUIT.cadang.length,
@@ -301,6 +363,23 @@ const headerMappingGudang = [
   { field: "attb", column: 12 },
   { field: "lainnya_limbah_non_b3", column: 13 },
   { field: "waktu_update", column: 24 },
+];
+
+const headerMappingMatlev = [
+  { field: "no", column: 0 },
+  { field: "kategori", column: 1 },
+  { field: "januari", column: 99 },
+  { field: "februari", column: 99 },
+  { field: "maret", column: 99 },
+  { field: "april", column: 2 },
+  { field: "mei", column: 3 },
+  { field: "juni", column: 4 },
+  { field: "juli", column: 5 },
+  { field: "agustus", column: 6 },
+  { field: "september", column: 7 },
+  { field: "oktober", column: 8 },
+  { field: "november", column: 9 },
+  { field: "desember", column: 10 },
 ];
 
 function groupAlatKerja(items) {

@@ -16,5 +16,6 @@ router.get("/data-asset/sld", dataSldController.getSld);
 router.get("/data-asset/slo", dataSloController.getSlo);
 router.get("/data-asset/tower-kritis", dataTowerController.getTowerKritis);
 router.get("/data-asset/row-kritis", dataTowerController.getRowKritis);
+router.get("/data-asset/health-index", dataTowerController.getHealthIndexTower);
 
 module.exports = router;

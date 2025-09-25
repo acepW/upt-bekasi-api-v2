@@ -439,6 +439,7 @@ const headerMappingJadwalPekerjaanK3 = [
   { field: "penanggung_jawab", column: 11 },
   { field: "tim_safety_advisor", column: 12 },
   { field: "keterangan", column: 13 },
+  { field: "status_pekerjaan", column: 14 },
 ];
 
 const headerMappingKatalogPeralatan = [

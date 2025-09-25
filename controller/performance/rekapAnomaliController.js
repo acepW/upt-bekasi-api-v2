@@ -12,31 +12,33 @@ const {
 const RekapAnomaliController = {
   getRekapAnomali: async (req, res) => {
     try {
-      const dataAnomaliGi = await SpreadsheetsFunction.getSpecificSheetDataById(
-        dataConfig.performance.anomaliGi.folderId, //folder Id
-        dataConfig.performance.anomaliGi.spreadsheetId, //spreadsheet Id
-        [1935746080, 954331737, 1216187522, 1479867489, 1303146936] // sheet id
-        //rembesan , kebocoran sf6, thermovisi, rembesan uit, kebocoran gas sf6 uit
-      );
-
-      const dataAnomaliJaringan =
-        await SpreadsheetsFunction.getSpecificSheetDataById(
-          dataConfig.performance.anomaliJaringan.folderId, //folder Id
-          dataConfig.performance.anomaliJaringan.spreadsheetId, //spreadsheet Id
-          [
-            66209448, 790898612, 91417407, 1819316177, 1205103023, 1101962821,
-            874629827,
-          ] // sheet id
-          //grounding,isolator,gsw,pondasi,bracing,jointing,konduktor acc,
-        );
-
-      const dataAnomaliProteksi =
-        await SpreadsheetsFunction.getSpecificSheetDataById(
-          dataConfig.performance.anomaliProteksi.folderId, //folder Id
-          dataConfig.performance.anomaliProteksi.spreadsheetId, //spreadsheet Id
-          [516972869, 1398146234, 1290962390, 1251449348, 572975010, 2138198502] // sheet id
-          //anounciator,auxiliary,matering,relay,telekomunikasi,sistem dc
-        );
+      const [dataAnomaliGi, dataAnomaliJaringan, dataAnomaliProteksi] =
+        await Promise.all([
+          SpreadsheetsFunction.getSpecificSheetDataById(
+            dataConfig.performance.anomaliGi.folderId, //folder Id
+            dataConfig.performance.anomaliGi.spreadsheetId, //spreadsheet Id
+            [1935746080, 954331737, 1216187522, 1479867489, 1303146936] // sheet id
+            //rembesan , kebocoran sf6, thermovisi, rembesan uit, kebocoran gas sf6 uit
+          ),
+          SpreadsheetsFunction.getSpecificSheetDataById(
+            dataConfig.performance.anomaliJaringan.folderId, //folder Id
+            dataConfig.performance.anomaliJaringan.spreadsheetId, //spreadsheet Id
+            [
+              66209448, 790898612, 91417407, 1819316177, 1205103023, 1101962821,
+              874629827,
+            ] // sheet id
+            //grounding,isolator,gsw,pondasi,bracing,jointing,konduktor acc,
+          ),
+          SpreadsheetsFunction.getSpecificSheetDataById(
+            dataConfig.performance.anomaliProteksi.folderId, //folder Id
+            dataConfig.performance.anomaliProteksi.spreadsheetId, //spreadsheet Id
+            [
+              516972869, 1398146234, 1290962390, 1251449348, 572975010,
+              2138198502,
+            ] // sheet id
+            //anounciator,auxiliary,matering,relay,telekomunikasi,sistem dc
+          ),
+        ]);
 
       const dataFinalAnomaliGi = await getAnomaliGi(dataAnomaliGi);
       const dataFinalAnomaliJaringan = await getAnomaliJaringan(
