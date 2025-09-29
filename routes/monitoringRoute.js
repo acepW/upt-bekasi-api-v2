@@ -19,6 +19,11 @@ router.get(
   "/monitoring/hsse/maturing-level-sustainability",
   dataHsseController.getHsseMaturingLevelSustain
 );
+
+router.get(
+  "/monitoring/hsse/maturing-level-lingkungan",
+  dataHsseController.getHsseMaturingLevelLingkungan
+);
 router.get(
   "/monitoring/konstruksi/adkonDalkon",
   datakonstruksiController.getAdkonDalkon

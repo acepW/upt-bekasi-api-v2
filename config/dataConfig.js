@@ -1,8 +1,16 @@
 const dataConfig = {
   dataAsset: {
+    dataAsset: {
+      folderId: "17E2rDofvcei2YLnFi-LkK2obvPABhjqY",
+      spreadsheetId: "1FVVNrcqhTttdHUDKS3afOH3vsWf6yN83",
+    },
     mtuPergantian: {
       folderId: "1fMd2AyJyYokFrVWIYPQgAux-Bsr1N2tF",
       spreadsheetId: "191yepVNw3As7Ze3yZRsv0SoWF-MbKGRZ",
+    },
+    mtuUsulanPergantian: {
+      folderId: "1RzN7ECSjvjbt2e2W0Aby53MsjWph5GBt",
+      spreadsheetId: "1NB_QM2uahfy4fRQCoFBo7QdHpUAnzYlc",
     },
     mtuKondisi: {
       folderId: "1quhUF7HLTeQrLg-3aKIbFMzvAqjrlJqk",
@@ -45,6 +53,10 @@ const dataConfig = {
     maturingLevelSustainability: {
       folderId: "1EJUSC5ZgEVKuQVCWX4RP4_lyvqUNSsxA",
       spreadsheetId: "1x_-dFio9Mmad0wdMc1VukJbOZcL1ls5y",
+    },
+    maturingLevelLingkungan: {
+      folderId: "1EJUSC5ZgEVKuQVCWX4RP4_lyvqUNSsxA",
+      spreadsheetId: "1y0i9rL2Q7ngJ16ERFe-nKIk0qTesctFN",
     },
   },
   monitoring: {

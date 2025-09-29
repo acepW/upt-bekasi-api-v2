@@ -155,6 +155,43 @@ const HsseController = {
       });
     }
   },
+
+  getHsseMaturingLevelLingkungan: async (req, res) => {
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.hsse.maturingLevelLingkungan.folderId, //folder Id
+        dataConfig.hsse.maturingLevelLingkungan.spreadsheetId, //spreadsheet Id
+        [322144122, 967111558] // sheet id
+      );
+
+      // Konversi data
+      const jsonResult = convertSpreadsheetToJSON(
+        data.sheetsData[322144122].data, //data spreadsheet
+        4, //index awal data
+        headerMappingMaturingLevelLingkungan //custom header
+      );
+
+      // Konversi data
+      const jsonResultSustain = convertSpreadsheetToJSON(
+        data.sheetsData[967111558].data, //data spreadsheet
+        4, //index awal data
+        headerMappingMaturingLevelSustenNew //custom header
+      );
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+        sustainability: jsonResultSustain.data,
+        lingkungan: jsonResult.data,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
 };
 
 function filterOutSingleValueData(data) {
@@ -459,6 +496,30 @@ const headerMappingMaturingLevelSustain = [
   { field: "bobot", column: 4 },
   { field: "nilai_self", column: 5 },
   { field: "nilai_akhir", column: 6 },
+];
+
+const headerMappingMaturingLevelLingkungan = [
+  { field: "poin", column: 0 },
+  { field: "unsur_penilaian", column: 1 },
+  { field: "target", column: 2 },
+  { field: "pencapaian", column: 3 },
+];
+
+const headerMappingMaturingLevelSustenNew = [
+  { field: "point", column: 0 },
+  { field: "transaksi_laporan", column: 1 },
+  { field: "januari", column: 2 },
+  { field: "februari", column: 3 },
+  { field: "maret", column: 4 },
+  { field: "april", column: 5 },
+  { field: "mei", column: 6 },
+  { field: "juni", column: 7 },
+  { field: "juli", column: 8 },
+  { field: "agustus", column: 9 },
+  { field: "september", column: 10 },
+  { field: "oktober", column: 11 },
+  { field: "november", column: 12 },
+  { field: "desember", column: 13 },
 ];
 
 module.exports = HsseController;

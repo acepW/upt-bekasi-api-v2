@@ -253,6 +253,49 @@ const MtuController = {
       });
     }
   },
+
+  getUsulanPenggantianMtu: async (req, res) => {
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.dataAsset.mtuUsulanPergantian.folderId, //folder Id
+        dataConfig.dataAsset.mtuUsulanPergantian.spreadsheetId, //spreadsheet Id
+        [1771000843] // sheet name
+      );
+
+      //untuk 99 belum ada datanya
+      const headerMapping = [
+        { field: "sumber_mtu", column: 0 },
+        { field: "tegangan", column: 1 },
+        { field: "cb", column: 2 },
+        { field: "ct", column: 3 },
+        { field: "cvt", column: 4 },
+        { field: "ds", column: 5 },
+        { field: "dse", column: 6 },
+        { field: "la", column: 7 },
+      ];
+
+      // Konversi data
+      const jsonResult = convertSpreadsheetToJSON(
+        data.data, //data spreadsheet
+        2, //index mulai data
+        headerMapping, //mapping header
+        ["sumber_mtu"] // merged field
+      );
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+
+        data: jsonResult,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
 };
 
 function filterData(data) {

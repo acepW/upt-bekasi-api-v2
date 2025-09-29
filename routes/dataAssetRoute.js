@@ -1,12 +1,18 @@
 const router = require("express").Router();
 
+const dataAssetController = require("../controller/dataAsset/dataAssetController");
 const dataMtuController = require("../controller/dataAsset/mtuController");
 const dataKaryawan = require("../controller/dataAsset/dataKaryawanController");
 const dataSldController = require("../controller/dataAsset/sldController");
 const dataSloController = require("../controller/dataAsset/sloController");
 const dataTowerController = require("../controller/dataAsset/towerController");
 
+router.get("/data-asset/asset", dataAssetController.getDataAsset);
 router.get("/data-asset/mtu/penggantian", dataMtuController.getPenggantianMtu);
+router.get(
+  "/data-asset/mtu/usulan-penggantian",
+  dataMtuController.getUsulanPenggantianMtu
+);
 router.get(
   "/data-asset/mtu/kondisi",
   dataMtuController.getMonitoringKondisiMtu
