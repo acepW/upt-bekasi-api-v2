@@ -163,7 +163,6 @@ const HsseController = {
         dataConfig.hsse.maturingLevelLingkungan.spreadsheetId, //spreadsheet Id
         [322144122, 967111558] // sheet id
       );
-
       // Konversi data
       const jsonResult = convertSpreadsheetToJSON(
         data.sheetsData[322144122].data, //data spreadsheet

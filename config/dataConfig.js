@@ -98,7 +98,7 @@ const dataConfig = {
   kinerja: {
     upt: {
       folderId: "1XKB3wuUXuCFCKlpp_YLmlafyRXfGghlc",
-      spreadsheetId: "1NEOwQ2IFSJMeKtGJ8RuJVc_yHCJyV40c",
+      spreadsheetId: "1noefZWLdFpcg_0BQBpN3sCBaaUEttst9",
     },
   },
 
