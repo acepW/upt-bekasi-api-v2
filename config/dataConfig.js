@@ -100,6 +100,16 @@ const dataConfig = {
       folderId: "1XKB3wuUXuCFCKlpp_YLmlafyRXfGghlc",
       spreadsheetId: "1noefZWLdFpcg_0BQBpN3sCBaaUEttst9",
     },
+
+    ultg_bekasi: {
+      folderId: "10z7nWzee1-Lkp3GwmwQ5L6g-2KE_Xba6",
+      spreadsheetId: "1HyPAEJc_-MTJhdbHCEZ1k8hqNJP0SH3K",
+    },
+
+    ultg_cikarang: {
+      folderId: "10z7nWzee1-Lkp3GwmwQ5L6g-2KE_Xba6",
+      spreadsheetId: "15Q_2W7P5prsPkM1_dvfCRN-DADt3O-oC",
+    },
   },
 
   performance: {

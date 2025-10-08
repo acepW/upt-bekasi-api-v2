@@ -201,7 +201,7 @@ const KonstruksiController = {
         dataSaldoAkhirUPT.data, //data spreadsheet
         1, //index awal data
         headerMappingSaldoAkhitUPT, //custom header
-        ["bulan", "tahun", "pragnosa_akhir_bulan", "progress_realisasi"] //merge field
+        ["bulan", "tahun", "pragnosa_akhir_bulan", "progres_realisasi"] //merge field
       );
 
       const grupSaldoAkhirUPT = groupBulanSaldoAkhirUPT(
