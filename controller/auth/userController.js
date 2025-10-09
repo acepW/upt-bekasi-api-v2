@@ -89,8 +89,8 @@ const userController = {
       const users = await Users.findByPk(_id);
       if (!users) return res.status(404).json({ msg: "User Not Found" });
 
+      console.log(req.body);
       let hashPassword;
-      //console.log(password);
       if (password === "" || password === null) {
         hashPassword = users.password;
       } else {
@@ -118,6 +118,7 @@ const userController = {
       ),
         res.status(200).json({ msg: "User Update Successfuly" });
     } catch (error) {
+      console.log(error.message);
       res.status(400).json({ msg: error.message });
     }
   },

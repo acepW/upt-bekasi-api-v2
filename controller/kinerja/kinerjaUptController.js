@@ -228,7 +228,6 @@ const KinerjaUptController = {
             roadmap_pergudangan: DataRoadmapPerbaikan || null,
           },
         },
-        tes: jsonResult.data,
       });
     } catch (error) {
       res.status(500).json({

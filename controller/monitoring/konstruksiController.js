@@ -7,6 +7,7 @@ const SpreadsheetsFunction = require("../../function/spreadsheetFunction");
 const dataConfig = require("../../config/dataConfig");
 const {
   convertSpreadsheetToJSON,
+  convertSpreadsheetToJSONWithRange,
 } = require("../../function/converSpreadsheetToJson");
 
 const KonstruksiController = {
@@ -16,6 +17,12 @@ const KonstruksiController = {
         dataConfig.monitoring.konstruksi.adkonDalkon.folderId, //folder Id
         dataConfig.monitoring.konstruksi.adkonDalkon.spreadsheetId, //spreadsheet Id
         "kontrak AI" // sheet name
+      );
+
+      const dataInvestasi = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.monitoring.investasi.folderId, //folder Id
+        dataConfig.monitoring.investasi.spreadsheetId, //spreadsheet Id
+        [1941962179] // sheet id
       );
 
       const headerMapping = [
@@ -31,11 +38,68 @@ const KonstruksiController = {
         { field: "status", column: 99 }, // 99 untuk kolom yang tidak ada di spreadsheet
       ];
 
+      const headerInvestasi = [
+        {
+          field: "skki_terbit",
+          type: "group",
+          fields: {
+            januari: 60,
+            februari: 61,
+            maret: 62,
+            april: 63,
+            mei: 64,
+            juni: 65,
+            juli: 66,
+            agustus: 67,
+            september: 68,
+            oktober: 69,
+            november: 70,
+            desember: 71,
+          },
+        },
+
+        {
+          field: "aki_terbayar",
+          type: "group",
+          fields: {
+            januari: 72,
+            februari: 73,
+            maret: 74,
+            april: 75,
+            mei: 76,
+            juni: 77,
+            juli: 78,
+            agustus: 79,
+            september: 80,
+            oktober: 81,
+            november: 82,
+            desember: 83,
+          },
+        },
+      ];
+
+      const headerInvestasiAkiTerbit = [{ field: "total", column: 5 }];
       // Konversi data
       const jsonResult = convertSpreadsheetToJSON(
         data.data, //data spreadsheet
         6, //index awal data
         headerMapping //custom header
+      );
+
+      // Konversi data
+      const jsonInvestasi = convertSpreadsheetToJSONWithRange(
+        dataInvestasi.data, // data spreadsheet
+        4, //index mulai data
+        4, //index akhir data
+        headerInvestasi
+      );
+
+      // Konversi data
+      const jsonInvestasiAkiTerbit = convertSpreadsheetToJSONWithRange(
+        dataInvestasi.data, // data spreadsheet
+        3, //index mulai data
+        3, //index akhir data
+        headerInvestasiAkiTerbit
       );
 
       // filter data, hilangkan yang no_kontrak atau nama_kontrak bernilai "-"
@@ -86,22 +150,50 @@ const KonstruksiController = {
 
       const pratinjauKontrak = groupCount(convertedData, "status");
 
-      const anggaranInvestasi = convertedData.reduce(
-        (acc, item) => {
-          acc.skki_terbit += item.nilai_terkontrak;
-          acc.aki_terbayar += item.sudah_bayar;
-          return acc;
-        },
-        { skki_terbit: 0, aki_terbayar: 0 }
+      //untuk skki terbit dan aki tebayar
+      // ambil bulan sekarang (misal: Oktober → index ke-9)
+      const bulanSekarang = new Date().getMonth(); // 0-based (0 = Januari)
+      const bulanSampai = bulanList[bulanSekarang];
+
+      // fungsi untuk ubah string seperti "8,703,728.2050" ke angka
+      const parseNumber = (str) => Number(str.replace(/,/g, "") || 0);
+
+      // ambil data pertama (kalau hanya 1)
+      const { skki_terbit, aki_terbayar } = jsonInvestasi.data[0];
+
+      // hitung total SKKI terbit (semua bulan)
+      const totalSkkiTerbit = Object.values(skki_terbit).reduce(
+        (sum, val) => sum + parseNumber(val),
+        0
       );
+
+      // hitung total AKI terbayar hanya sampai bulan sekarang
+      let totalAkiTerbayar = 0;
+      for (let i = 0; i <= bulanSekarang; i++) {
+        const bulan = bulanList[i];
+        totalAkiTerbayar += parseNumber(aki_terbayar[bulan]);
+      }
+
+      // const anggaranInvestasi = convertedData.reduce(
+      //   (acc, item) => {
+      //     acc.skki_terbit += item.nilai_terkontrak;
+      //     acc.aki_terbayar += item.sudah_bayar;
+      //     return acc;
+      //   },
+      //   { skki_terbit: 0, aki_terbayar: 0 }
+      // );
 
       res.status(200).json({
         status: "success",
         message: "get data successfully",
+        anggaran_investasi: {
+          skki_terbit: totalSkkiTerbit.toLocaleString(),
+          aki_terbayar: totalAkiTerbayar.toLocaleString(),
+          aki_terbit: jsonInvestasiAkiTerbit.data[0]?.total,
+        },
         data_kontrak: convertedData,
         grafik_progres_fisik: grouped,
         pratinjau_kontrak: pratinjauKontrak,
-        anggaran_investasi: anggaranInvestasi,
       });
     } catch (error) {
       res.status(500).json({
@@ -660,5 +752,21 @@ const parseCurrency = (value) => {
   if (!value || value === "-") return 0;
   return Number(value.replace(/,/g, ""));
 };
+
+// daftar bulan dalam urutan
+const bulanList = [
+  "januari",
+  "februari",
+  "maret",
+  "april",
+  "mei",
+  "juni",
+  "juli",
+  "agustus",
+  "september",
+  "oktober",
+  "november",
+  "desember",
+];
 
 module.exports = KonstruksiController;

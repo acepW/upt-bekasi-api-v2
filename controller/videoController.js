@@ -6,7 +6,7 @@ const VideoController = {
     const { is_active, limit, page } = req.query;
 
     let obj = {};
-    if (is_active) obj.is_active = is_active;
+    if (is_active) obj.is_active = is_active == "true" ? true : false;
 
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
