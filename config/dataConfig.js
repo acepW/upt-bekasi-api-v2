@@ -89,6 +89,11 @@ const dataConfig = {
       spreadsheetId: "18X30NFqIC5ARw1bf7buOXV7DUs6vZyRW",
     },
 
+    investasi: {
+      folderId: "1pzyXm2nPnSd_tt7igKevZ3fKbXULkW-7",
+      spreadsheetId: "1NWXfwRRHcLukALYM-gutaOzm-MARCcdL",
+    },
+
     lm_abo: {
       folderId: "1ruMO_0H9dBY7syU4SiwEuu-s4tiMt-W8",
       spreadsheetId: "15vTKWbEsJF_UQxcn8N3QnFUqCFFZ6uNX",
@@ -124,6 +129,10 @@ const dataConfig = {
     anomaliProteksi: {
       folderId: "1TQA7A8h8kcl1kiOQRTyYMxxwAAA_jP7-",
       spreadsheetId: "1NYSRGnOtSDZ4DagKfzYRuBn1dn0Qvc2C",
+    },
+    commonEnemy: {
+      folderId: "1fDR60LcvPfKilnktEaYUQuLOIlOPIBC0",
+      spreadsheetId: "1Ccy6axoQE1dhMLHzNwvc_UM5TogRM4Xr",
     },
   },
 };
