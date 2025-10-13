@@ -377,6 +377,9 @@ const KonstruksiController = {
           sisa_pekerjaan: jsonResultSisaPekerjaan.data.length,
           material_bongkaran: jsonResultMaterialBongkaran.data.length,
           non_b3: filterNonB3.length,
+          normal_data: grupSaldoAkhitUIT.normal,
+          cadang_data: grupSaldoAkhitUIT.cadang,
+          bursa_data: grupSaldoAkhitUIT.bursa,
         },
         grafik_saldo: grupSaldoAkhirUPT,
         data_gudang: jsonResultGudang.data,
@@ -416,7 +419,11 @@ const headerMappingNonB3 = [
 
 const headerMappingSaldoAkhitUIT = [
   { field: "no_material", column: 1 },
+  { field: "deskripsi_material", column: 2 },
+  { field: "satuan", column: 5 },
+  { field: "tipe_material", column: 6 },
   { field: "type_valuasi", column: 7 },
+  { field: "lokasi_gudang", column: 8 },
 ];
 
 const headerMappingSaldoAkhitUPT = [
