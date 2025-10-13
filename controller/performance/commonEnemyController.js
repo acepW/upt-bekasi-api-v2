@@ -22,35 +22,106 @@ const CommonEnemyController = {
         //gi hotspot mut, gi tekanan gas,gi rembesan, pro alarm relai, pro hotspot sekunder, annunciator, jar pentanahan, jar thermovisi, jar tegakan tinjut upt (tegakan pohon kritis kalau di rekapnya)
       );
 
-      const headerMappingGi = [
+      const headerMappingGiHostpotMtu = [
         { field: "upt", column: 3 },
+        { field: "ultg", column: 5 },
+        { field: "gi", column: 6 },
+        { field: "penghantar", column: 7 },
+        { field: "lokasi", column: 8 },
+        { field: "alat", column: 9 },
+        { field: "role", column: 12 },
+        { field: "tgl", column: 13 },
+        { field: "komponen", column: 14 },
+        { field: "status", column: 23 },
+      ];
+
+      const headerMappingGiTekanGas = [
+        { field: "upt", column: 3 },
+        { field: "ultg", column: 5 },
+        { field: "gi", column: 6 },
+        { field: "penghantar", column: 7 },
+        { field: "lokasi", column: 8 },
+        { field: "alat", column: 9 },
+        { field: "role", column: 12 },
+        { field: "tgl", column: 13 },
+        { field: "komponen", column: 14 },
+        { field: "status", column: 23 },
+      ];
+
+      const headerMappingGiRembesan = [
+        { field: "upt", column: 3 },
+        { field: "ultg", column: 5 },
+        { field: "gi", column: 6 },
+        { field: "penghantar", column: 7 },
+        { field: "lokasi", column: 9 },
+        { field: "alat", column: 99 },
+        { field: "role", column: 12 },
+        { field: "tgl", column: 13 },
+        { field: "komponen", column: 14 },
         { field: "status", column: 23 },
       ];
       const headerMappingProAlarmRelai = [
         { field: "upt", column: 4 },
+        { field: "ultg", column: 5 },
+        { field: "gi", column: 6 },
+        { field: "bay", column: 7 },
+        { field: "alat", column: 8 },
+        { field: "tgl", column: 9 },
+        { field: "kategori_anomali", column: 10 },
+        { field: "anomali", column: 11 },
         { field: "status", column: 16 },
       ];
       const headerMappingProHotspotSekunder = [
         { field: "upt", column: 3 },
+        { field: "ultg", column: 4 },
+        { field: "gi", column: 5 },
+        { field: "bay", column: 6 },
+        { field: "alat", column: 7 },
+        { field: "tgl", column: 8 },
+        { field: "anomali", column: 9 },
         { field: "status", column: 14 },
       ];
       const headerMappingProannuniciator = [
         { field: "upt", column: 4 },
+        { field: "ultg", column: 5 },
+        { field: "gi", column: 6 },
+        { field: "bay", column: 7 },
+        // { field: "alat", column: 8 },
+        // { field: "tgl", column: 9 },
+        { field: "anomali", column: 10 },
         { field: "status", column: 15 },
       ];
 
       const headerMappingJarPentanahan = [
+        { field: "lokasi", column: 2 },
+        { field: "tgl", column: 3 },
         { field: "upt", column: 4 },
+        { field: "ultg", column: 5 },
+        { field: "alat", column: 6 },
         { field: "status", column: 23 },
       ];
 
       const headerMappingJarThermovisi = [
         { field: "upt", column: 2 },
+        { field: "ultg", column: 3 },
+        { field: "gardu", column: 4 },
+        { field: "pengantar", column: 5 },
+        { field: "lokasi", column: 6 },
+        { field: "pst", column: 7 },
+        { field: "alat", column: 8 },
+        { field: "tgl", column: 9 },
         { field: "status", column: 23 },
       ];
 
       const headerMappingJarTegakanTinjut = [
+        { field: "tgl_inspeksi", column: 1 },
         { field: "upt", column: 2 },
+        { field: "ultg", column: 3 },
+        { field: "gi", column: 4 },
+        { field: "bay", column: 5 },
+        { field: "tower", column: 6 },
+        { field: "jumlah", column: 7 },
+        { field: "id_pohon", column: 8 },
         { field: "status", column: 13 },
       ];
 
@@ -58,21 +129,21 @@ const CommonEnemyController = {
       const jsonResultHotspot = convertSpreadsheetToJSON(
         data.sheetsData[1126382818].data, // data spreadsheet
         1, //index mulai data
-        headerMappingGi
+        headerMappingGiHostpotMtu
       );
 
       // Konversi data
       const jsonResultTekananGas = convertSpreadsheetToJSON(
         data.sheetsData[2000372598].data, // data spreadsheet
         1, //index mulai data
-        headerMappingGi
+        headerMappingGiTekanGas
       );
 
       // Konversi data
       const jsonResultRembesan = convertSpreadsheetToJSON(
         data.sheetsData[639339136].data, // data spreadsheet
         1, //index mulai data
-        headerMappingGi
+        headerMappingGiRembesan
       );
 
       // Konversi data
@@ -117,95 +188,131 @@ const CommonEnemyController = {
         headerMappingJarTegakanTinjut
       );
 
-      const filterHotspot = jsonResultHotspot.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterHotspot = (() => {
+        const filtered = jsonResultHotspot.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
-      const filterTekananGas = jsonResultTekananGas.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterTekananGas = (() => {
+        const filtered = jsonResultTekananGas.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
-      const filterRembesan = jsonResultRembesan.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterRembesan = (() => {
+        const filtered = jsonResultRembesan.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
-      const filterProAlarmRelai = jsonResultProAlarmRelai.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterProAlarmRelai = (() => {
+        const filtered = jsonResultProAlarmRelai.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
-      const filterProHotspotSekunder = jsonResultProHotspotSekunder.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterProHotspotSekunder = (() => {
+        const filtered = jsonResultProHotspotSekunder.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
-      const filterProAnnunciator = jsonResultProAnnunciator.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterProAnnunciator = (() => {
+        const filtered = jsonResultProAnnunciator.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
-      const filterJarPentanahan = jsonResultJarPentanahan.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterJarPentanahan = (() => {
+        const filtered = jsonResultJarPentanahan.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
-      const filterJarThermovisi = jsonResultJarThermovisi.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterJarThermovisi = (() => {
+        const filtered = jsonResultJarThermovisi.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
-      const filterJarTegakanTinjut = jsonResultJarTegakanTinjut.data
-        .filter((item) => item.upt === "UPT BEKASI")
-        .reduce(
+      const filterJarTegakanTinjut = (() => {
+        const filtered = jsonResultJarTegakanTinjut.data.filter(
+          (item) => item.upt === "UPT BEKASI"
+        );
+        const grouped = filtered.reduce(
           (acc, item) => {
             acc[item.status] = (acc[item.status] || 0) + 1;
             return acc;
           },
           { OPEN: 0, CLOSE: 0 }
         );
+        return { status: grouped, data: filtered };
+      })();
 
       res.status(200).json({
         status: "success",

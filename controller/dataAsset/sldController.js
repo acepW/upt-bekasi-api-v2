@@ -15,17 +15,17 @@ const SldController = {
       const data = await SpreadsheetsFunction.getSpecificSheetDataById(
         dataConfig.dataAsset.sld.folderId, //folder Id
         dataConfig.dataAsset.sld.spreadsheetId, //spreadsheet Id
-        [0] // sheet id
+        [1089802955] // sheet id
       );
 
       const headerMapping = [
-        { field: "upt", column: 1 },
-        { field: "ultg", column: 2 },
-        { field: "nama_gi_gis", column: 3 },
-        { field: "jenis", column: 4 },
-        { field: "tegangan", column: 5 },
-        { field: "desa", column: 10 },
-        { field: "link_sld", column: 17 },
+        { field: "upt", column: 2 },
+        { field: "ultg", column: 17 },
+        { field: "nama_gi_gis", column: 1 },
+        { field: "jenis", column: 3 },
+        { field: "tegangan", column: 4 },
+        { field: "rilis_sld", column: 8 },
+        { field: "link_sld", column: 7 },
       ];
 
       // Konversi data
@@ -36,7 +36,7 @@ const SldController = {
       );
 
       const filterData = jsonResult.data.filter((item) => item.upt == "BEKASI");
-
+      console.log(filterData.length);
       res.status(200).json({
         status: "success",
         message: "get data successfully",

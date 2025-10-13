@@ -1,8 +1,9 @@
 const dataConfig = {
   dataAsset: {
+    // data asset ngambil dari data yg sama dengan LM & ABO
     dataAsset: {
-      folderId: "17E2rDofvcei2YLnFi-LkK2obvPABhjqY",
-      spreadsheetId: "1FVVNrcqhTttdHUDKS3afOH3vsWf6yN83",
+      folderId: "1ruMO_0H9dBY7syU4SiwEuu-s4tiMt-W8",
+      spreadsheetId: "15vTKWbEsJF_UQxcn8N3QnFUqCFFZ6uNX",
     },
     mtuPergantian: {
       folderId: "1fMd2AyJyYokFrVWIYPQgAux-Bsr1N2tF",
@@ -20,9 +21,11 @@ const dataConfig = {
       folderId: "11AkF-dMSOR89jKGwX_hrqxj5feNdKKEz",
       spreadsheetId: "1FloVgW2VjpSITMDWZKWwLy1GVW11VJaB",
     },
+
+    // sld ngambil dari data yg sama dengan LM & ABO
     sld: {
-      folderId: "14o5cvlBnobWNnpMYbkeZJ4bD-loYfGa2",
-      spreadsheetId: "1K-6vRb3y7TznCQ9cM_uJRHZshXlbyq1m",
+      folderId: "1ruMO_0H9dBY7syU4SiwEuu-s4tiMt-W8",
+      spreadsheetId: "15vTKWbEsJF_UQxcn8N3QnFUqCFFZ6uNX",
     },
     slo: {
       folderId: "1YIJ10ANLHggZ3kQR9EYeACsnISNOtnj1",
