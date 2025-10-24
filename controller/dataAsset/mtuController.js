@@ -22,15 +22,15 @@ const MtuController = {
         { field: "no", column: 0 },
         { field: "gi", column: 3 },
         { field: "bay", column: 4 },
-        { field: "status_usia", column: 14 },
-        { field: "prioritas", column: 99 },
+        { field: "status_usia", column: 15 },
+        { field: "prioritas", column: 13 },
       ];
       const headerMappingCT = [
         { field: "no", column: 0 },
         { field: "gi", column: 3 },
         { field: "bay", column: 4 },
-        { field: "status_usia", column: 14 },
-        { field: "prioritas", column: 99 },
+        { field: "status_usia", column: 15 },
+        { field: "prioritas", column: 13 },
       ];
       const headerMappingKabelPower = [
         { field: "no", column: 0 },
@@ -44,24 +44,24 @@ const MtuController = {
         { field: "no", column: 0 },
         { field: "gi", column: 3 },
         { field: "bay", column: 4 },
-        { field: "status_usia", column: 14 },
-        { field: "prioritas", column: 99 },
+        { field: "status_usia", column: 15 },
+        { field: "prioritas", column: 13 },
       ];
 
       const headerMappingCVT = [
         { field: "no", column: 0 },
         { field: "gi", column: 3 },
         { field: "bay", column: 4 },
-        { field: "status_usia", column: 14 },
-        { field: "prioritas", column: 99 },
+        { field: "status_usia", column: 15 },
+        { field: "prioritas", column: 13 },
       ];
 
       const headerMappingCB = [
         { field: "no", column: 0 },
         { field: "gi", column: 3 },
         { field: "bay", column: 4 },
-        { field: "status_usia", column: 14 },
-        { field: "prioritas", column: 99 },
+        { field: "status_usia", column: 15 },
+        { field: "prioritas", column: 13 },
       ];
 
       const headerMappingDS = [
@@ -69,47 +69,47 @@ const MtuController = {
         { field: "gi", column: 3 },
         { field: "bay", column: 4 },
         { field: "status_usia", column: 15 },
-        { field: "prioritas", column: 99 },
+        { field: "prioritas", column: 13 },
       ];
 
       // Konversi data
       const jsonResultLA = convertSpreadsheetToJSON(
         data.sheetsData["LA"].data, // data spreadsheet
-        1, //index mulai data
+        8, //index mulai data
         headerMappingLA // mapping header
       );
 
       const jsonResultCT = convertSpreadsheetToJSON(
         data.sheetsData["CT"].data, // data spreadsheet
-        1, //index mulai data
+        8, //index mulai data
         headerMappingCT // mapping header
       );
 
       const jsonResultKabelPower = convertSpreadsheetToJSON(
         data.sheetsData["Kabel Power"].data, // data spreadsheet
-        1, //index mulai data
+        8, //index mulai data
         headerMappingKabelPower // mapping header
       );
       const jsonResultTRAFO = convertSpreadsheetToJSON(
         data.sheetsData["TRAFO"].data, // data spreadsheet
-        1, //index mulai data
+        8, //index mulai data
         headerMappingTRAFO // mapping header
       );
 
       const jsonResultCVT = convertSpreadsheetToJSON(
         data.sheetsData["CVT"].data, // data spreadsheet
-        1, //index mulai data
+        8, //index mulai data
         headerMappingCVT // mapping header
       );
       const jsonResultCB = convertSpreadsheetToJSON(
         data.sheetsData["CB"].data, // data spreadsheet
-        1, //index mulai data
+        8, //index mulai data
         headerMappingCB // mapping header
       );
 
       const jsonResultDS = convertSpreadsheetToJSON(
         data.sheetsData["DS"].data, // data spreadsheet
-        1, //index mulai data
+        8, //index mulai data
         headerMappingDS // mapping header
       );
 
