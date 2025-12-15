@@ -199,12 +199,12 @@ const HsseController = {
       const data = await SpreadsheetsFunction.getSpecificSheetDataById(
         dataConfig.hsse.sertifikasiKompetensi.folderId, //folder Id
         dataConfig.hsse.sertifikasiKompetensi.spreadsheetId, //spreadsheet Id
-        [768235426] // sheet id
+        [768235426, 735873628] // sheet id
       );
 
       // Konversi data
       const jsonResult = convertSpreadsheetToJSONWithRange(
-        data.data, //data spreadsheet
+        data.sheetsData[768235426].data, //data spreadsheet
         10, //index awal data
         11, //index akhir data
         headerMappingSertifikasiKompetensi //custom header
@@ -212,9 +212,16 @@ const HsseController = {
 
       // Konversi data jenis sertifikat
       const jsonResultJenisSertifikat = convertSpreadsheetToJSON(
-        data.data, //data spreadsheet
+        data.sheetsData[768235426].data, //data spreadsheet
         16, //index awal data
         headerMappingSertifikasiKompetensiJenisSertifikat //custom header
+      );
+
+      // Konversi data realissasi
+      const jsonResultRealisasi = convertSpreadsheetToJSON(
+        data.sheetsData[735873628].data, //data spreadsheet
+        18, //index awal data
+        headerMappingSertifikasiKompetensiRealisasi //custom header
       );
 
       res.status(200).json({
@@ -223,6 +230,7 @@ const HsseController = {
         // tes: data,
         data: jsonResult.data,
         data_jenis_sertifikat: jsonResultJenisSertifikat.data,
+        data_realisasi: jsonResultRealisasi.data,
       });
     } catch (error) {
       res.status(500).json({
@@ -583,6 +591,22 @@ const headerMappingSertifikasiKompetensiJenisSertifikat = [
   { field: "no", column: 1 },
   { field: "jenis_sertifikat", column: 2 },
   { field: "persentase", column: 3 },
+];
+
+const headerMappingSertifikasiKompetensiRealisasi = [
+  { field: "no", column: 0 },
+  { field: "nip", column: 1 },
+  { field: "nama", column: 2 },
+  { field: "jenis", column: 3 },
+  { field: "kualifikasi", column: 4 },
+  { field: "pelaksana", column: 5 },
+  { field: "keterangan", column: 6 },
+  { field: "berlaku", column: 7 },
+  { field: "no_sertifikat", column: 8 },
+  { field: "no_registrasi", column: 9 },
+  { field: "tgl_awal_berlaku", column: 10 },
+  { field: "tgl_akhir_berlaku", column: 11 },
+  { field: "unit", column: 12 },
 ];
 
 module.exports = HsseController;
