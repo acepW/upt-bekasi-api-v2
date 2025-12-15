@@ -26,6 +26,9 @@ router.use("/", require("./articleRoute"));
 //video
 router.use("/", require("./videoRoute"));
 
+//home page
+router.use("/", require("./homePageImageRoute"));
+
 //
 router.use("/", require("./uploadRoute"));
 

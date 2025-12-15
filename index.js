@@ -7,12 +7,13 @@ const cookieParser = require("cookie-parser");
 const Users = require("./model/userModel");
 const Article = require("./model/articleModel");
 const Video = require("./model/videoModel");
+const HomePageImage = require("./model/homePageImageModel");
 const path = require("path");
 const app = express();
 dotenv.config();
 
 // (async () => {
-//   await Video.sync({ alter: true });
+//   await HomePageImage.sync({ alter: true });
 // })();
 
 app.use(

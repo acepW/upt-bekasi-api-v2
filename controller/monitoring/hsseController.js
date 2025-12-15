@@ -7,6 +7,7 @@ const SpreadsheetsFunction = require("../../function/spreadsheetFunction");
 const dataConfig = require("../../config/dataConfig");
 const {
   convertSpreadsheetToJSON,
+  convertSpreadsheetToJSONWithRange,
 } = require("../../function/converSpreadsheetToJson");
 
 const HsseController = {
@@ -183,6 +184,45 @@ const HsseController = {
         message: "get data successfully",
         sustainability: jsonResultSustain.data,
         lingkungan: jsonResult.data,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get data",
+        error: error.message,
+      });
+    }
+  },
+
+  getHsseSertifikasiKompetensi: async (req, res) => {
+    try {
+      const data = await SpreadsheetsFunction.getSpecificSheetDataById(
+        dataConfig.hsse.sertifikasiKompetensi.folderId, //folder Id
+        dataConfig.hsse.sertifikasiKompetensi.spreadsheetId, //spreadsheet Id
+        [768235426] // sheet id
+      );
+
+      // Konversi data
+      const jsonResult = convertSpreadsheetToJSONWithRange(
+        data.data, //data spreadsheet
+        10, //index awal data
+        11, //index akhir data
+        headerMappingSertifikasiKompetensi //custom header
+      );
+
+      // Konversi data jenis sertifikat
+      const jsonResultJenisSertifikat = convertSpreadsheetToJSON(
+        data.data, //data spreadsheet
+        16, //index awal data
+        headerMappingSertifikasiKompetensiJenisSertifikat //custom header
+      );
+
+      res.status(200).json({
+        status: "success",
+        message: "get data successfully",
+        // tes: data,
+        data: jsonResult.data,
+        data_jenis_sertifikat: jsonResultJenisSertifikat.data,
       });
     } catch (error) {
       res.status(500).json({
@@ -520,6 +560,29 @@ const headerMappingMaturingLevelSustenNew = [
   { field: "oktober", column: 11 },
   { field: "november", column: 12 },
   { field: "desember", column: 13 },
+];
+
+const headerMappingSertifikasiKompetensi = [
+  { field: "judul_diklat", column: 2 },
+  { field: "damkar_kelas_d", column: 3 },
+  { field: "damkar_kelas_c", column: 4 },
+  { field: "damkar_kelas_b", column: 5 },
+  { field: "damkar_kelas_a", column: 6 },
+  { field: "p3k", column: 7 },
+  { field: "pengukuran", column: 8 },
+  { field: "pengawasan_k3", column: 9 },
+  { field: "ahli_k3_muda", column: 10 },
+  { field: "ahli_k3_umum", column: 11 },
+  { field: "auditor_smk3", column: 12 },
+  { field: "ahli_k3_spesialis_listrik", column: 13 },
+  { field: "gada_utama", column: 14 },
+  { field: "auditor_smp", column: 15 },
+];
+
+const headerMappingSertifikasiKompetensiJenisSertifikat = [
+  { field: "no", column: 1 },
+  { field: "jenis_sertifikat", column: 2 },
+  { field: "persentase", column: 3 },
 ];
 
 module.exports = HsseController;

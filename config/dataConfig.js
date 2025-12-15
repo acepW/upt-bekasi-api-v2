@@ -61,6 +61,10 @@ const dataConfig = {
       folderId: "1EJUSC5ZgEVKuQVCWX4RP4_lyvqUNSsxA",
       spreadsheetId: "1y0i9rL2Q7ngJ16ERFe-nKIk0qTesctFN",
     },
+    sertifikasiKompetensi: {
+      folderId: "1fifkI0ZKZRy8mNqaOLbIhGwU7a_5smaH",
+      spreadsheetId: "1kYIueqmEOmdWrCCwXsNEgbnUQ_P-XhBj",
+    },
   },
   monitoring: {
     konstruksi: {
