@@ -199,7 +199,7 @@ const HsseController = {
       const data = await SpreadsheetsFunction.getSpecificSheetDataById(
         dataConfig.hsse.sertifikasiKompetensi.folderId, //folder Id
         dataConfig.hsse.sertifikasiKompetensi.spreadsheetId, //spreadsheet Id
-        [768235426, 735873628] // sheet id
+        [768235426, 735873628, 185624114] // sheet id
       );
 
       // Konversi data
@@ -224,6 +224,14 @@ const HsseController = {
         headerMappingSertifikasiKompetensiRealisasi //custom header
       );
 
+      // Konversi data
+      const jsonResultAnalisaKebutuhan = convertSpreadsheetToJSONWithRange(
+        data.sheetsData[185624114].data, //data spreadsheet
+        5, //index awal data
+        5, //index akhir data
+        headerMappingSertifikasiKompetensiSheetAnalisa //custom header
+      );
+
       res.status(200).json({
         status: "success",
         message: "get data successfully",
@@ -231,6 +239,7 @@ const HsseController = {
         data: jsonResult.data,
         data_jenis_sertifikat: jsonResultJenisSertifikat.data,
         data_realisasi: jsonResultRealisasi.data,
+        data_analisa_kebutuhan: jsonResultAnalisaKebutuhan.data,
       });
     } catch (error) {
       res.status(500).json({
@@ -585,6 +594,23 @@ const headerMappingSertifikasiKompetensi = [
   { field: "ahli_k3_spesialis_listrik", column: 13 },
   { field: "gada_utama", column: 14 },
   { field: "auditor_smp", column: 15 },
+];
+
+const headerMappingSertifikasiKompetensiSheetAnalisa = [
+  { field: "judul_diklat", column: 0 },
+  { field: "damkar_kelas_d", column: 1 },
+  { field: "damkar_kelas_c", column: 2 },
+  { field: "damkar_kelas_b", column: 3 },
+  { field: "damkar_kelas_a", column: 4 },
+  { field: "p3k", column: 5 },
+  { field: "pengukuran", column: 6 },
+  { field: "pengawasan_k3", column: 7 },
+  { field: "ahli_k3_muda", column: 8 },
+  { field: "ahli_k3_umum", column: 9 },
+  { field: "auditor_smk3", column: 10 },
+  { field: "ahli_k3_spesialis_listrik", column: 11 },
+  { field: "gada_utama", column: 12 },
+  { field: "auditor_smp", column: 13 },
 ];
 
 const headerMappingSertifikasiKompetensiJenisSertifikat = [
